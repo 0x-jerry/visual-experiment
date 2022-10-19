@@ -1,0 +1,85 @@
+<script lang="ts" setup>
+import { clear, useCanvas } from '@/canvas'
+import { mapRange, Random } from '@/math'
+import { useDatGUI, useRafStats } from '@/hooks'
+
+// ______________
+
+const option = reactive({
+  speed: {
+    _: true,
+    min: 10,
+    max: 1000,
+    step: 1,
+    value: 10,
+  },
+  stepSize: {
+    _: true,
+    min: 1,
+    max: 20,
+    step: 1,
+    value: 3,
+  },
+  color: {
+    _: 'color',
+    value: '#f26f6f',
+  },
+})
+
+useDatGUI(option)
+
+// -----------
+
+const ctx = useCanvas()
+
+const lines: number[] = []
+
+const drawLine = (x: number, value: number) => {
+  ctx.moveTo(x, 0)
+  ctx.lineTo(x, value)
+}
+
+const random = Random()
+
+const getRandomValue = () => {
+  const w = ctx.canvas.width
+
+  let value = random()
+
+  value = Math.round(mapRange(value, 0, w))
+
+  lines[value] ||= 0
+  lines[value] += option.stepSize.value
+}
+
+useRafStats(() => {
+  for (let idx = 0; idx < option.speed.value; idx++) {
+    getRandomValue()
+  }
+
+  clear(ctx)
+
+  ctx.strokeStyle = option.color.value
+
+  ctx.beginPath()
+
+  lines.forEach((value, idx) => {
+    drawLine(idx, value || 0)
+  })
+
+  ctx.stroke()
+})
+</script>
+
+<template>
+  <div class="p-10">
+    <div class="text-center text-2xl my-4">Pseudo Random Distribution</div>
+    <div
+      :ref="ctx.ref"
+      class="w-600px m-auto border border-gray-200"
+      style="aspect-ratio: 16 / 9"
+    ></div>
+  </div>
+</template>
+
+<style lang="less" scoped></style>

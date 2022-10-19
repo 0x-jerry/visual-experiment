@@ -1,12 +1,15 @@
 import type { Ref } from 'vue'
 
-export function useCanvas(container: Ref<HTMLElement | undefined>) {
+export function useCanvas() {
+  const container = ref<HTMLElement>()
   const canvas = document.createElement('canvas')
 
   canvas.style.width = '100%'
   canvas.style.height = '100%'
 
-  const ctx = canvas.getContext('2d')!
+  const ctx = canvas.getContext('2d')! as UseCanvasContext
+
+  ctx.ref = container
 
   onMounted(() => {
     const el = container.value
@@ -23,4 +26,8 @@ export function useCanvas(container: Ref<HTMLElement | undefined>) {
   })
 
   return ctx
+}
+
+export interface UseCanvasContext extends CanvasRenderingContext2D {
+  ref: Ref<HTMLElement | undefined>
 }

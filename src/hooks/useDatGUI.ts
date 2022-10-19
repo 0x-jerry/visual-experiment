@@ -28,18 +28,24 @@ function resolveGUIType<T extends {}>(data: T, gui: GUI) {
     }
 
     if (is.object(value)) {
-      const type = value['_']
-      if (!type) {
+      const customType = value['_']
+
+      if (!customType) {
         const folderGui = gui.addFolder(key)
         resolveGUIType(value, folderGui)
         continue
       }
 
-      if (type === 'color') {
-        gui.addColor(value, 'value')
+      if (customType === 'color') {
+        gui.addColor(value, 'value').name(key)
       } else {
-        const { min, max, step } = value
-        gui.add(value, 'value', min, max, step)
+        const { min, max, step, items } = value
+
+        if (items) {
+          gui.add(value, 'value', items).name(key)
+        } else {
+          gui.add(value, 'value', min, max, step).name(key)
+        }
       }
 
       continue
