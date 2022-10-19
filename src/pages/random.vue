@@ -69,6 +69,10 @@ useRafStats(() => {
 
   ctx.stroke()
 })
+
+function reset() {
+  lines.splice(0)
+}
 </script>
 
 <template>
@@ -79,6 +83,9 @@ useRafStats(() => {
       class="w-600px m-auto border border-gray-200"
       style="aspect-ratio: 16 / 9"
     ></div>
+    <div class="mt-4 text-center">
+      <button @click="reset">Reset</button>
+    </div>
   </div>
 </template>
 
