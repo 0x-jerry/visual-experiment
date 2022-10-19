@@ -1,6 +1,19 @@
 {
+  "name": "fractal-experiment",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/0x-jerry/fractal-experiment.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/0x-jerry/fractal-experiment/issues"
+  },
+  "homepage": "https://github.com/0x-jerry/fractal-experiment#readme",
   "scripts": {
     "dev": "vite",
+    "test": "vitest",
     "build": "vite build",
     "serve": "vite preview"
   },
@@ -23,6 +36,7 @@
     "unplugin-vue-components": "^0.22.0",
     "vite": "^3.0.0",
     "vite-plugin-mkcert": "1.10.1",
-    "vite-plugin-pages": "^0.26.0"
+    "vite-plugin-pages": "^0.26.0",
+    "vitest": "^0.24.3"
   }
 }

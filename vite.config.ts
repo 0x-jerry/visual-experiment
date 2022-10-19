@@ -1,3 +1,5 @@
+/// <reference types="vitest/config" />
+
 import { defineConfig } from 'vite'
 import Vue from '@vitejs/plugin-vue'
 import path from 'path'
@@ -52,4 +54,7 @@ export default defineConfig(() => ({
       source: 'coding',
     }),
   ],
+  test: {
+    globals: true,
+  },
 }))
