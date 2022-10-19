@@ -91,7 +91,7 @@ function addDatGUIByType<T extends DatGUISchemaObject>(data: T, gui: FolderApi) 
       continue
     }
 
-    gui.addInput(value, 'value', value)
+    gui.addInput(value, 'value', { label: key, ...value })
   }
 }
 
