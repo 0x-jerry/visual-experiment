@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import Layout from '@/components/Layout.vue'
 import { clear, useCanvas } from '@/canvas'
 import { mapRange, Random } from '@/math'
 import { useDatGUI, useRafStats } from '@/hooks'
@@ -32,11 +33,6 @@ const ctx = useCanvas()
 
 const lines: number[] = []
 
-const drawLine = (x: number, value: number) => {
-  ctx.moveTo(x, 0)
-  ctx.lineTo(x, value)
-}
-
 const random = Random()
 
 const getRandomValue = () => {
@@ -62,7 +58,9 @@ useRafStats(() => {
   ctx.beginPath()
 
   lines.forEach((value, idx) => {
-    drawLine(idx, value || 0)
+    const x = idx
+    ctx.moveTo(x, 0)
+    ctx.lineTo(x, value)
   })
 
   ctx.stroke()
@@ -74,17 +72,13 @@ function reset() {
 </script>
 
 <template>
-  <div class="p-10">
-    <div class="text-center text-2xl my-4">Pseudo Random Distribution</div>
+  <Layout title="Pseudo Random Distribution" @reset="reset">
     <div
       :ref="ctx.ref"
       class="w-600px m-auto border border-gray-200"
       style="aspect-ratio: 16 / 9"
     ></div>
-    <div class="mt-4 text-center">
-      <button @click="reset">Reset</button>
-    </div>
-  </div>
+  </Layout>
 </template>
 
 <style lang="less" scoped></style>
