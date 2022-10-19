@@ -1,18 +1,20 @@
 import { is } from '@0x-jerry/utils'
-import { GUI, GUIParams } from 'dat.gui'
+import { FolderApi, Pane } from 'tweakpane'
+import type { PaneConfig } from 'tweakpane/dist/types/pane/pane-config'
 
-export function useDatGUI<T extends DatGUISchemaObject>(data: T, opt?: GUIParams) {
+export function useOptionGUI<T extends DatGUISchemaObject>(data: T, opt?: PaneConfig) {
   const $data = reactive(data) as T
 
-  let gui: GUI | null = null
+  let gui: Pane | null = null
 
   onMounted(() => {
-    gui = new GUI(opt)
+    gui = new Pane(Object.assign({ title: 'options' }, opt))
+
     addDatGUIByType($data, gui)
   })
 
   onUnmounted(() => {
-    gui?.destroy()
+    gui?.dispose()
   })
 
   return computed(() => getDatGUISchemObjectValue($data))
@@ -55,24 +57,24 @@ type ExtractDatGUISchemaObject<T extends DatGUISchemaObject> = {
 }
 
 export type DatGUISchema<V = any, T = any> = {
-  _: boolean | string
+  _: boolean
   value: V
   min?: number
   max?: number
   step?: number
-  items?: T[]
+  options?: T[] | {}
 }
 
 export type DatGUISchemaObject = {
   [key: string]: string | number | boolean | DatGUISchema | DatGUISchemaObject
 }
 
-function addDatGUIByType<T extends DatGUISchemaObject>(data: T, gui: GUI) {
+function addDatGUIByType<T extends DatGUISchemaObject>(data: T, gui: FolderApi) {
   for (const key in data) {
     const value = data[key as keyof T]
 
     if (is.primitive(value)) {
-      gui.add(data, key as string)
+      gui.addInput(data, key)
       continue
     }
 
@@ -81,25 +83,15 @@ function addDatGUIByType<T extends DatGUISchemaObject>(data: T, gui: GUI) {
     }
 
     if (!isDatGUISchema(value)) {
-      const folderGui = gui.addFolder(key)
+      const folderGui = gui.addFolder({
+        title: key,
+      })
 
       addDatGUIByType(value, folderGui)
       continue
     }
 
-    const type = value._
-
-    if (type === 'color') {
-      gui.addColor(value, 'value').name(key)
-    } else {
-      const { min, max, step, items } = value
-
-      if (items) {
-        gui.add(value, 'value', items).name(key)
-      } else {
-        gui.add(value, 'value', min, max, step).name(key)
-      }
-    }
+    gui.addInput(value, 'value', value)
   }
 }
 

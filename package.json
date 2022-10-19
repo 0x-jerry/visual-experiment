@@ -24,10 +24,12 @@
     "dat.gui": "^0.7.9",
     "normalize.css": "^8.0.1",
     "stats.js": "^0.17.0",
+    "tweakpane": "^3.1.0",
     "vue": "^3.2.37",
     "vue-router": "^4.1.2"
   },
   "devDependencies": {
+    "@tweakpane/core": "^1.1.0",
     "@types/dat.gui": "^0.7.7",
     "@types/node": "^18.0.4",
     "@types/stats.js": "^0.17.0",

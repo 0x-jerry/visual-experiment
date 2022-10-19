@@ -2,11 +2,11 @@
 import Layout from '@/components/Layout.vue'
 import { clear, useCanvas } from '@/canvas'
 import { mapRange, Random } from '@/math'
-import { useDatGUI, useRafStats } from '@/hooks'
+import { useOptionGUI, useRafStats } from '@/hooks'
 
 // ______________
 
-const option = useDatGUI({
+const option = useOptionGUI({
   speed: {
     _: true,
     min: 10,
@@ -21,10 +21,7 @@ const option = useDatGUI({
     step: 1,
     value: 3,
   },
-  color: {
-    _: 'color',
-    value: '#f26f6f',
-  },
+  color: '#f26f6f',
 })
 
 // -----------
