@@ -13,7 +13,7 @@ import { VueKitResolver } from '@0x-jerry/vue-kit/resolver'
 import mkcert from 'vite-plugin-mkcert'
 
 // https://vitejs.dev/config/
-export default defineConfig(() => ({
+export default defineConfig(({ mode }) => ({
   base: './',
   resolve: {
     alias: {
@@ -21,7 +21,7 @@ export default defineConfig(() => ({
     },
   },
   server: {
-    https: true,
+    https: mode === 'development',
   },
   plugins: [
     Vue(),
@@ -50,9 +50,10 @@ export default defineConfig(() => ({
     Unocss(),
 
     // https://github.com/liuweiGL/vite-plugin-mkcert
-    mkcert({
-      source: 'coding',
-    }),
+    mode === 'development' &&
+      mkcert({
+        source: 'coding',
+      }),
   ],
   test: {
     globals: true,
