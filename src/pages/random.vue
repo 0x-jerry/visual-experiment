@@ -5,7 +5,7 @@ import { useDatGUI, useRafStats } from '@/hooks'
 
 // ______________
 
-const option = reactive({
+const option = useDatGUI({
   speed: {
     _: true,
     min: 10,
@@ -25,8 +25,6 @@ const option = reactive({
     value: '#f26f6f',
   },
 })
-
-useDatGUI(option)
 
 // -----------
 
@@ -49,17 +47,17 @@ const getRandomValue = () => {
   value = Math.round(mapRange(value, 0, w))
 
   lines[value] ||= 0
-  lines[value] += option.stepSize.value
+  lines[value] += option.value.stepSize
 }
 
 useRafStats(() => {
-  for (let idx = 0; idx < option.speed.value; idx++) {
+  for (let idx = 0; idx < option.value.speed; idx++) {
     getRandomValue()
   }
 
   clear(ctx)
 
-  ctx.strokeStyle = option.color.value
+  ctx.strokeStyle = option.value.color
 
   ctx.beginPath()
 
