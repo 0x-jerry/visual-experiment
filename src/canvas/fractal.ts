@@ -1,6 +1,6 @@
-import { deg2rad, Random } from '@/math'
+import { deg2rad } from '@/math'
 import { Vec2 } from '@/math/Vec'
-import { Fn, sleep } from '@0x-jerry/utils'
+import { sleep } from '@0x-jerry/utils'
 
 interface Status extends Vec2 {
   deg: number
@@ -43,6 +43,12 @@ interface DrawOption {
 
 const { cos, sin } = Math
 
+/**
+ * https://www.wikiwand.com/en/L-system#/Example_7:_Fractal_plant
+ *
+ * @param ctx
+ * @param opt
+ */
 export async function drawFractal(ctx: CanvasRenderingContext2D, opt: DrawOption) {
   const { width, height } = ctx.canvas
 
