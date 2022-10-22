@@ -1,9 +1,21 @@
 import { is } from '@0x-jerry/utils'
 import { FolderApi, Pane } from 'tweakpane'
 import type { PaneConfig } from 'tweakpane/dist/types/pane/pane-config'
+import { ComputedRef } from 'vue'
+
+export type UseOptionGUIResult<T extends DatGUISchemaObject> = ComputedRef<
+  ExtractDatGUISchemaObject<T>
+> & {
+  reset(): void
+}
 
 export function useOptionGUI<T extends DatGUISchemaObject>(data: T, opt?: PaneConfig) {
-  const $data = reactive(data) as T
+  const route = useRoute()
+
+  const cache = useLocalStorage<T>(route.fullPath, data)
+  cache.value = Object.assign(structuredClone(data), cache.value)
+
+  const $data = cache.value
 
   let gui: Pane | null = null
 
@@ -17,7 +29,15 @@ export function useOptionGUI<T extends DatGUISchemaObject>(data: T, opt?: PaneCo
     gui?.dispose()
   })
 
-  return computed(() => getDatGUISchemObjectValue($data))
+  const r = computed(() => getDatGUISchemObjectValue($data)) as UseOptionGUIResult<T>
+
+  r.reset = resetCache
+
+  return r
+
+  function resetCache() {
+    cache.value = structuredClone(data)
+  }
 }
 
 function getDatGUISchemObjectValue<T extends DatGUISchemaObject>(data: T) {
@@ -57,7 +77,7 @@ type ExtractDatGUISchemaObject<T extends DatGUISchemaObject> = {
 }
 
 export type DatGUISchema<V = any, T = any> = {
-  _: boolean
+  _: boolean | string
   value: V
   min?: number
   max?: number
@@ -88,6 +108,11 @@ function addDatGUIByType<T extends DatGUISchemaObject>(data: T, gui: FolderApi) 
       })
 
       addDatGUIByType(value, folderGui)
+      continue
+    }
+
+    if (value._ === 'monitor') {
+      gui.addMonitor(value, 'value', { label: key, ...value })
       continue
     }
 
