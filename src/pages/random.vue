@@ -22,6 +22,9 @@ const option = useOptionGUI({
     value: 3,
   },
   color: '#f26f6f',
+  reset() {
+    lines.splice(0)
+  },
 })
 
 // -----------
@@ -70,11 +73,7 @@ function reset() {
 
 <template>
   <Layout title="Pseudo Random Distribution" @reset="reset">
-    <div
-      :ref="ctx.ref"
-      class="w-600px m-auto border border-gray-200"
-      style="aspect-ratio: 16 / 9"
-    ></div>
+    <div :ref="ctx.ref" class="w-full h-full"></div>
   </Layout>
 </template>
 

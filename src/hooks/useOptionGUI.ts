@@ -1,4 +1,6 @@
+import { isInIframe } from '@/utils'
 import { is } from '@0x-jerry/utils'
+import { resolveObjectURL } from 'buffer'
 import { FolderApi, Pane } from 'tweakpane'
 import type { PaneConfig } from 'tweakpane/dist/types/pane/pane-config'
 import { ComputedRef } from 'vue'
@@ -16,6 +18,11 @@ export function useOptionGUI<T extends DatGUISchemaObject>(data: T, opt?: PaneCo
   cache.value = Object.assign({}, data, cache.value)
 
   const $data = cache.value
+  const result = computed(() => getDatGUISchemObjectValue($data)) as UseOptionGUIResult<T>
+
+  if (isInIframe) {
+    return result
+  }
 
   let gui: Pane | null = null
 
@@ -29,11 +36,9 @@ export function useOptionGUI<T extends DatGUISchemaObject>(data: T, opt?: PaneCo
     gui?.dispose()
   })
 
-  const r = computed(() => getDatGUISchemObjectValue($data)) as UseOptionGUIResult<T>
+  result.reset = resetCache
 
-  r.reset = resetCache
-
-  return r
+  return result
 
   function resetCache() {
     cache.value = { ...data }

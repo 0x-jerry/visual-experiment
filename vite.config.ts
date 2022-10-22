@@ -23,7 +23,7 @@ export default defineConfig(({}) => ({
     Vue(),
 
     // https://github.com/antfu/unplugin-icons
-    Icons(),
+    Icons({}),
 
     // https://github.com/antfu/vite-plugin-components
     Components({
