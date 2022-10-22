@@ -4,6 +4,7 @@ import { clear, useCanvas } from '@/canvas'
 import { Random } from '@/math'
 import { useOptionGUI, useRafStats } from '@/hooks'
 import dayjs from 'dayjs'
+import { drawFractal } from '@/canvas/fractal'
 
 // ______________
 
@@ -122,16 +123,23 @@ function drawClock2(x: number, y: number) {
   }
 }
 
-useRafStats(() => {
+onMounted(() => {
+  drawFractal(ctx, {
+    length: 150,
+    factor: 0.5,
+    startAngle: -10,
+    color: '#ccc',
+    limit: {
+      len: 1,
+      generation: 8,
+    },
+  }).then(() => {
+    console.log('done')
+  })
+})
+
+onUnmounted(() => {
   clear(ctx)
-
-  ctx.strokeStyle = option.value.color
-
-  ctx.beginPath()
-
-  update()
-
-  ctx.stroke()
 })
 
 function reset() {

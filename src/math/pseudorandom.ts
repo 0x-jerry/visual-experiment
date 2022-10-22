@@ -18,9 +18,11 @@
 export function Random(seed = 0) {
   seed = Math.abs(seed)
 
-  return () => {
+  return (min = 0, max = 1) => {
     const a = seed * 15485863
     seed++
-    return ((a * a * a) % 2038074743) / 2038074743
+    const r = ((a * a * a) % 2038074743) / 2038074743
+
+    return min + (max - min) * r
   }
 }
