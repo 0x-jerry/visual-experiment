@@ -12,6 +12,14 @@ export function useCanvas() {
 
   ctx.ref = container
 
+  useEventListener('resize', () => {
+    const el = container.value
+    if (!el) return
+
+    canvas.width = el.clientWidth
+    canvas.height = el.clientHeight
+  })
+
   onMounted(() => {
     const el = container.value
     if (!el) return

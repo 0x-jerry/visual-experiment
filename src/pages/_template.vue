@@ -34,12 +34,8 @@ function reset() {
 </script>
 
 <template>
-  <Layout title="Template" @reset="reset">
-    <div
-      :ref="ctx.ref"
-      class="w-600px m-auto border border-gray-200"
-      style="aspect-ratio: 16 / 9"
-    ></div>
+  <Layout title="title">
+    <div :ref="ctx.ref" class="w-full h-full"></div>
   </Layout>
 </template>
 

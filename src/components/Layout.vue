@@ -9,15 +9,12 @@ defineEmits<{
 </script>
 
 <template>
-  <div class="p-10">
-    <div class="text-center text-2xl">
+  <div class="w-screen h-screen flex flex-col">
+    <div class="text-center text-2xl py-4 border-b border-gray-200">
       <slot name="title"> {{ title }}</slot>
     </div>
-    <div class="my-4">
+    <div class="flex-1">
       <slot></slot>
-    </div>
-    <div class="text-center">
-      <button @click="$emit('reset')">Reset</button>
     </div>
   </div>
 </template>

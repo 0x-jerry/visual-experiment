@@ -13,7 +13,7 @@ export function useOptionGUI<T extends DatGUISchemaObject>(data: T, opt?: PaneCo
   const route = useRoute()
 
   const cache = useLocalStorage<T>(route.fullPath, data)
-  cache.value = Object.assign(structuredClone(data), cache.value)
+  cache.value = Object.assign({}, data, cache.value)
 
   const $data = cache.value
 
@@ -36,7 +36,7 @@ export function useOptionGUI<T extends DatGUISchemaObject>(data: T, opt?: PaneCo
   return r
 
   function resetCache() {
-    cache.value = structuredClone(data)
+    cache.value = { ...data }
   }
 }
 
@@ -52,6 +52,10 @@ function getDatGUISchemObjectValue<T extends DatGUISchemaObject>(data: T) {
     }
 
     if (!is.object(value)) {
+      continue
+    }
+
+    if (is.fn(value)) {
       continue
     }
 
@@ -86,7 +90,7 @@ export type DatGUISchema<V = any, T = any> = {
 }
 
 export type DatGUISchemaObject = {
-  [key: string]: string | number | boolean | DatGUISchema | DatGUISchemaObject
+  [key: string]: string | number | boolean | DatGUISchema | DatGUISchemaObject | (() => any)
 }
 
 function addDatGUIByType<T extends DatGUISchemaObject>(data: T, gui: FolderApi) {
@@ -95,6 +99,15 @@ function addDatGUIByType<T extends DatGUISchemaObject>(data: T, gui: FolderApi) 
 
     if (is.primitive(value)) {
       gui.addInput(data, key)
+      continue
+    }
+
+    if (is.fn(value)) {
+      gui
+        .addButton({
+          title: key,
+        })
+        .on('click', value)
       continue
     }
 

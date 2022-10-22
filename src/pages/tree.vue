@@ -18,6 +18,7 @@ const option = useOptionGUI({
   },
   length: 50,
   dumping: 0.6,
+  reset,
 })
 
 // -----------
@@ -115,7 +116,7 @@ function drawClock2(x: number, y: number) {
       ctx.lineTo(x + dx, y + dy)
 
       for (const item of node.children || []) {
-        drawClock(x + dx, y + dy, item, startAngle * 2)
+        drawClock(x + dx, y + dy, item, startAngle + PI / 4)
       }
     }
   }
@@ -141,12 +142,8 @@ function reset() {
 </script>
 
 <template>
-  <Layout title="Simple Tree" @reset="reset">
-    <div
-      :ref="ctx.ref"
-      class="w-600px m-auto border border-gray-200"
-      style="aspect-ratio: 16 / 9"
-    ></div>
+  <Layout title="Simple Tree">
+    <div :ref="ctx.ref" class="w-full h-full"></div>
   </Layout>
 </template>
 
