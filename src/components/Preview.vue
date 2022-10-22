@@ -5,7 +5,7 @@ defineProps<{
 }>()
 
 function getPath(p: string) {
-  return '/#' + p
+  return location.pathname + '#' + p
 }
 
 const size = {
