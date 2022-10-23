@@ -49,7 +49,7 @@ const { cos, sin } = Math
  * @param ctx
  * @param opt
  */
-export async function drawFractal(ctx: CanvasRenderingContext2D, opt: DrawOption) {
+export async function* drawFractal(ctx: CanvasRenderingContext2D, opt: DrawOption) {
   const { width, height } = ctx.canvas
 
   const vars: Var[] = [
@@ -71,7 +71,10 @@ export async function drawFractal(ctx: CanvasRenderingContext2D, opt: DrawOption
     const rule = getRule(varItem, rules)
 
     if (rule) applyRule(varItem, rule)
+
     await sleep(1000 / 60)
+
+    yield
   }
 
   // ---------

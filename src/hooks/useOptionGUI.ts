@@ -1,6 +1,5 @@
 import { isInIframe } from '@/utils'
 import { is } from '@0x-jerry/utils'
-import { resolveObjectURL } from 'buffer'
 import { FolderApi, Pane } from 'tweakpane'
 import type { PaneConfig } from 'tweakpane/dist/types/pane/pane-config'
 import { ComputedRef } from 'vue'
