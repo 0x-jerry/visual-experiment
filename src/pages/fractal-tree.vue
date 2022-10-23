@@ -33,6 +33,9 @@ const option = useOptionGUI({
 const ctx = useCanvas()
 
 const runner = generatorRunner(drawFractal)
+runner.emitter.on('done', () => {
+  console.log('done')
+})
 
 async function reset() {
   clear(ctx)

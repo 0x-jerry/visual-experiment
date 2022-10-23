@@ -1,4 +1,4 @@
-import { deg2rad } from '@/math'
+import { deg2rad, Random } from '@/math'
 import { Vec2 } from '@/math/Vec'
 import { sleep } from '@0x-jerry/utils'
 
@@ -49,6 +49,8 @@ const { cos, sin } = Math
  */
 export async function* drawFractal(ctx: CanvasRenderingContext2D, opt: DrawOption) {
   const { width, height } = ctx.canvas
+
+  const random = Random()
 
   const startStatus: Status = {
     x: width * (1 / 4),
@@ -113,7 +115,7 @@ export async function* drawFractal(ctx: CanvasRenderingContext2D, opt: DrawOptio
   function applyAction(action: string) {
     if (!currentStats) return
 
-    const { x, y, deg, len } = currentStats
+    const { x, y, len } = currentStats
 
     switch (action) {
       case 'X':
@@ -122,6 +124,9 @@ export async function* drawFractal(ctx: CanvasRenderingContext2D, opt: DrawOptio
 
       case 'F':
         {
+          currentStats.deg += random(-5, 5)
+
+          const deg = currentStats.deg
           ctx.strokeStyle = opt.color
 
           ctx.beginPath()
@@ -141,11 +146,11 @@ export async function* drawFractal(ctx: CanvasRenderingContext2D, opt: DrawOptio
         break
 
       case '-':
-        currentStats.deg += 25
+        currentStats.deg += 25 + random(-5, 5)
         break
 
       case '+':
-        currentStats.deg -= 25
+        currentStats.deg -= 25 + random(-5, 5)
         break
 
       case '[':
