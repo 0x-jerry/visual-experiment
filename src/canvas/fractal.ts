@@ -10,7 +10,6 @@ interface Status extends Vec2 {
 interface Var {
   type: string
   generation: number
-  status: Status
 }
 
 interface Rule {
@@ -36,7 +35,6 @@ interface DrawOption {
   startAngle: number
   color: string
   limit: {
-    len: number
     generation: number
   }
 }
@@ -52,29 +50,58 @@ const { cos, sin } = Math
 export async function* drawFractal(ctx: CanvasRenderingContext2D, opt: DrawOption) {
   const { width, height } = ctx.canvas
 
+  const startStatus: Status = {
+    x: width * (1 / 4),
+    y: height,
+    deg: -90 + opt.startAngle,
+    len: opt.length,
+  }
+
+  const status: Status[] = [startStatus]
+  let currentStats = status.pop()
+
   const vars: Var[] = [
     {
       type: 'X',
       generation: 0,
-      status: {
-        x: width / 2,
-        y: height,
-        deg: -90 + opt.startAngle,
-        len: opt.length,
-      },
     },
   ]
 
   while (vars.length) {
-    const varItem = vars.shift()!
+    const currentVar = vars.shift()!
 
-    const rule = getRule(varItem, rules)
+    if (currentVar.generation === opt.limit.generation) {
+      await draw()
+      yield
+      continue
+    }
 
-    if (rule) applyRule(varItem, rule)
+    const rule = getRule(currentVar, rules)
+    const nextVars: Var[] = []
 
-    await sleep(1000 / 60)
+    if (!rule) {
+      await draw()
+      yield
+      continue
+    }
 
-    yield
+    const actions = rule.constants.split('')
+
+    for (const action of actions) {
+      nextVars.push({
+        type: action,
+        generation: currentVar.generation + 1,
+      })
+    }
+
+    while (nextVars.length) {
+      vars.unshift(nextVars.pop()!)
+    }
+
+    async function draw() {
+      applyAction(currentVar.type)
+      await sleep(0)
+    }
   }
 
   // ---------
@@ -83,76 +110,56 @@ export async function* drawFractal(ctx: CanvasRenderingContext2D, opt: DrawOptio
     return rules.find((rule) => rule.type === item.type)
   }
 
-  function applyRule(item: Var, rule: Rule) {
-    const actions = rule.constants.split('')
+  function applyAction(action: string) {
+    if (!currentStats) return
 
-    const cache: Var[] = []
+    const { x, y, deg, len } = currentStats
 
-    for (const action of actions) {
-      applyAction(action)
-    }
+    switch (action) {
+      case 'X':
+        //
+        break
 
-    function applyAction(action: string) {
-      if (!item.status) return
+      case 'F':
+        {
+          ctx.strokeStyle = opt.color
 
-      const { x, y, deg, len } = item.status
+          ctx.beginPath()
 
-      switch (action) {
-        case 'X':
-          {
-            const newItem: Var = {
-              type: 'X',
-              generation: item.generation + 1,
-              status: { ...item.status },
-            }
+          ctx.moveTo(x, y)
 
-            if (newItem.status.len > opt.limit.len && newItem.generation < opt.limit.generation) {
-              newItem.status!.len *= opt.factor
+          const x2 = len * cos(deg2rad(deg))
+          const y2 = len * sin(deg2rad(deg))
 
-              vars.push(newItem)
-            }
-          }
-          break
+          ctx.lineTo(x + x2, y + y2)
 
-        case 'F':
-          {
-            ctx.strokeStyle = opt.color
+          currentStats.x = x + x2
+          currentStats.y = y + y2
 
-            ctx.beginPath()
+          ctx.stroke()
+        }
+        break
 
-            ctx.moveTo(x, y)
-            const x2 = len * cos(deg2rad(deg))
-            const y2 = len * sin(deg2rad(deg))
-            ctx.lineTo(x + x2, y + y2)
-            item.status.x = x + x2
-            item.status.y = y + y2
+      case '-':
+        currentStats.deg += 25
+        break
 
-            ctx.stroke()
-          }
-          break
+      case '+':
+        currentStats.deg -= 25
+        break
 
-        case '-':
-          item.status.deg += 25
-          break
+      case '[':
+        {
+          status.push(structuredClone(currentStats))
+        }
+        break
 
-        case '+':
-          item.status.deg -= 25
-          break
+      case ']':
+        currentStats = status.pop()
+        break
 
-        case '[':
-          {
-            const newItem = structuredClone(item)
-            cache.push(newItem)
-          }
-          break
-
-        case ']':
-          item = cache.pop()!
-          break
-
-        default:
-          break
-      }
+      default:
+        break
     }
   }
 }

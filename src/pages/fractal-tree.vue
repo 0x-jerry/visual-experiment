@@ -8,19 +8,14 @@ import { generatorRunner } from '@/utils'
 // ______________
 
 const option = useOptionGUI({
-  length: 150,
+  length: 5,
   factor: 0.5,
-  startAngle: -10,
+  startAngle: 25,
   color: '#ccc',
   limit: {
-    len: {
-      _: true,
-      value: 1,
-      min: 0,
-    },
     generation: {
       _: true,
-      min: 2,
+      min: 0,
       max: 10,
       value: 6,
       step: 1,
@@ -40,14 +35,17 @@ const ctx = useCanvas()
 const runner = generatorRunner(drawFractal)
 
 async function reset() {
-  await runner.current
-
   clear(ctx)
-  runner.reset(ctx, option.value)
+
+  runner.restart(ctx, option.value)
 }
 
 onMounted(async () => {
   reset()
+})
+
+onUnmounted(async () => {
+  await runner.pause()
 })
 </script>
 
