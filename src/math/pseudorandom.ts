@@ -15,7 +15,7 @@
  *
  * @param seed
  */
-export function Random(seed = 0) {
+export function Random(seed = Date.now()) {
   seed = Math.abs(seed)
 
   return (min = 0, max = 1) => {
