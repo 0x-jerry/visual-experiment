@@ -34,9 +34,7 @@ interface DrawOption {
   factor: number
   startAngle: number
   color: string
-  limit: {
-    generation: number
-  }
+  generation: number
 }
 
 const { cos, sin } = Math
@@ -72,7 +70,7 @@ export async function* drawFractal(ctx: CanvasRenderingContext2D, opt: DrawOptio
   while (vars.length) {
     const currentVar = vars.shift()!
 
-    if (currentVar.generation === opt.limit.generation) {
+    if (currentVar.generation === opt.generation) {
       await draw()
       yield
       continue

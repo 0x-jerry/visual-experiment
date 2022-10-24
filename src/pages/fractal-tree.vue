@@ -12,14 +12,12 @@ const option = useOptionGUI({
   factor: 0.5,
   startAngle: 25,
   color: '#ccc',
-  limit: {
-    generation: {
-      _: true,
-      min: 0,
-      max: 10,
-      value: 6,
-      step: 1,
-    },
+  generation: {
+    _: true,
+    min: 0,
+    max: 10,
+    value: 6,
+    step: 1,
   },
   redraw: () => reset(),
   reset: () => {
@@ -33,6 +31,7 @@ const option = useOptionGUI({
 const ctx = useCanvas()
 
 const runner = generatorRunner(drawFractal)
+
 runner.emitter.on('done', () => {
   console.log('done')
 })
