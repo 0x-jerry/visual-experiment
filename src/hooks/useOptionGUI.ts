@@ -1,3 +1,4 @@
+import { isDev } from '@/env'
 import { isInIframe } from '@/utils'
 import { is } from '@0x-jerry/utils'
 import { FolderApi, Pane } from 'tweakpane'
@@ -13,7 +14,7 @@ export type UseOptionGUIResult<T extends DatGUISchemaObject> = ComputedRef<
 export function useOptionGUI<T extends DatGUISchemaObject>(data: T, opt?: PaneConfig) {
   const route = useRoute()
 
-  const cache = useLocalStorage<T>(route.fullPath, data)
+  const cache = isDev ? useLocalStorage<T>(route.fullPath, data) : ref(data)
   cache.value = Object.assign({}, data, cache.value)
 
   const result = computed(() => getDatGUISchemObjectValue(cache.value)) as UseOptionGUIResult<T>
