@@ -1,16 +1,16 @@
 {
-  "name": "fractal-experiment",
+  "name": "visual-experiment",
   "version": "1.0.0",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/0x-jerry/fractal-experiment.git"
+    "url": "git+https://github.com:0x-jerry/visual-experiment.git"
   },
   "keywords": [],
   "bugs": {
-    "url": "https://github.com/0x-jerry/fractal-experiment/issues"
+    "url": "https://github.com:0x-jerry/visual-experiment/issues"
   },
-  "homepage": "https://github.com/0x-jerry/fractal-experiment#readme",
+  "homepage": "https://github.com:0x-jerry/visual-experiment#readme",
   "scripts": {
     "dev": "vite",
     "test": "vitest",
