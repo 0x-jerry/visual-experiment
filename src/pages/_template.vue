@@ -8,6 +8,10 @@ import { useOptionGUI, useRafStats } from '@/hooks'
 
 const option = useOptionGUI({
   color: '#f26f6f',
+  reset() {
+    option.reset()
+    location.reload()
+  },
 })
 
 // -----------

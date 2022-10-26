@@ -16,8 +16,7 @@ export function useOptionGUI<T extends DatGUISchemaObject>(data: T, opt?: PaneCo
   const cache = useLocalStorage<T>(route.fullPath, data)
   cache.value = Object.assign({}, data, cache.value)
 
-  const $data = cache.value
-  const result = computed(() => getDatGUISchemObjectValue($data)) as UseOptionGUIResult<T>
+  const result = computed(() => getDatGUISchemObjectValue(cache.value)) as UseOptionGUIResult<T>
 
   if (isInIframe) {
     return result
@@ -26,9 +25,16 @@ export function useOptionGUI<T extends DatGUISchemaObject>(data: T, opt?: PaneCo
   let gui: Pane | null = null
 
   onMounted(() => {
-    gui = new Pane(Object.assign({ title: 'options' }, opt))
+    try {
+      gui = new Pane(Object.assign({ title: 'options' }, opt))
+      addDatGUIByType(cache.value, gui)
+    } catch (error) {
+      gui?.dispose()
 
-    addDatGUIByType($data, gui)
+      cache.value = data
+      gui = new Pane(Object.assign({ title: 'options' }, opt))
+      addDatGUIByType(cache.value, gui)
+    }
   })
 
   onUnmounted(() => {
