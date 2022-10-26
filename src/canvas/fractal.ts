@@ -126,6 +126,7 @@ export async function* drawFractal(ctx: CanvasRenderingContext2D, opt: DrawOptio
 
           const deg = currentStats.deg
           ctx.strokeStyle = opt.color
+          ctx.lineWidth = 2
 
           ctx.beginPath()
 

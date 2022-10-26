@@ -8,7 +8,7 @@ export function useCanvas() {
   canvas.style.height = '100%'
   canvas.style.display = 'block'
 
-  const ctx = canvas.getContext('2d')! as UseCanvasContext
+  const ctx = canvas.getContext('2d', { willReadFrequently: true })! as UseCanvasContext
 
   ctx.ref = container
 

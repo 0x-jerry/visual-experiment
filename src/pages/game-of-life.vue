@@ -16,6 +16,13 @@ const option = useOptionGUI({
     step: 1,
     value: 20,
   },
+  FPS: {
+    _: true,
+    step: 1,
+    value: 24,
+    min: 8,
+    max: 60,
+  },
   refresh() {
     generate()
   },
@@ -81,7 +88,7 @@ class Life {
 const status = new Life()
 
 watch(
-  () => option.value,
+  () => option.value.size,
   () => {
     generate()
   },
@@ -112,7 +119,7 @@ function generate() {
 async function* loop() {
   while (true) {
     draw()
-    await sleep(1000 / 60)
+    await sleep(1000 / option.value.FPS)
     yield
   }
 }
