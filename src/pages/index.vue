@@ -10,6 +10,10 @@ const pages = [
     title: 'Fractal Tree',
     path: '/fractal-tree',
   },
+  {
+    title: "Conway's Game of Life",
+    path: '/game-of-life',
+  },
 ]
 </script>
 

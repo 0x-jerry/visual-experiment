@@ -14,7 +14,7 @@ const option = useOptionGUI({
     _: true,
     min: 5,
     step: 1,
-    value: 5,
+    value: 20,
   },
   refresh() {
     generate()
