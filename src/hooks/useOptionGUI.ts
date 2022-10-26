@@ -7,15 +7,19 @@ import { ComputedRef } from 'vue'
 
 export type UseOptionGUIResult<T extends DatGUISchemaObject> = ComputedRef<
   ExtractDatGUISchemaObject<T>
-> & {
-  reset(): void
-}
+>
 
 export function useOptionGUI<T extends DatGUISchemaObject>(data: T, opt?: PaneConfig) {
   const route = useRoute()
 
   const cache = isDev ? useLocalStorage<T>(route.fullPath, data) : ref(data)
   cache.value = Object.assign({}, data, cache.value)
+  if (isDev) {
+    ;(cache.value as any).clearCache = () => {
+      resetCache()
+      location.reload()
+    }
+  }
 
   const result = computed(() => getDatGUISchemObjectValue(cache.value)) as UseOptionGUIResult<T>
 
@@ -41,8 +45,6 @@ export function useOptionGUI<T extends DatGUISchemaObject>(data: T, opt?: PaneCo
   onUnmounted(() => {
     gui?.dispose()
   })
-
-  result.reset = resetCache
 
   return result
 

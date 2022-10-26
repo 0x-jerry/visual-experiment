@@ -26,10 +26,6 @@ const option = useOptionGUI({
   refresh() {
     generate()
   },
-  reset() {
-    option.reset()
-    location.reload()
-  },
 })
 
 // -----------

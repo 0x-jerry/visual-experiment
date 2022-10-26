@@ -20,10 +20,6 @@ const option = useOptionGUI({
     step: 1,
   },
   redraw: () => reset(),
-  reset: () => {
-    option.reset()
-    location.reload()
-  },
 })
 
 // -----------
