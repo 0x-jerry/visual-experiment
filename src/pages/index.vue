@@ -2,7 +2,7 @@
 import Preview from '@/components/Preview.vue'
 const pages = [
   {
-    title: 'Random Count',
+    title: 'Pseudo Random Distribution',
     path: '/random',
   },
   {
