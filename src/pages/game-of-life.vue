@@ -4,6 +4,7 @@ import { useCanvas } from '@/canvas'
 import { Random } from '@/math'
 import { useOptionGUI } from '@/hooks'
 import { useFPSRunner } from '@/hooks/useFPSRunner'
+import { Grid } from '@/math/grid'
 
 // ______________
 
@@ -33,37 +34,7 @@ const ctx = useCanvas()
 
 const random = Random()
 
-type Status = 0 | 1
-
-class Life {
-  data: Status[] = []
-
-  constructor(public w: number = 0, public h: number = 0) {}
-
-  get(x: number, y: number): Status {
-    const idx = y * this.w + x
-
-    return this.data.at(idx) ?? 0
-  }
-
-  set(x: number, y: number, v: Status) {
-    if (x < 0 || x >= this.w || y < 0 || y >= this.h) {
-      return
-    }
-
-    const idx = y * this.w + x
-
-    this.data[idx] = v
-  }
-
-  forEach(cb: (v: Status, x: number, y: number) => any) {
-    for (let y = 0; y < status.h; y++) {
-      for (let x = 0; x < status.w; x++) {
-        cb(this.get(x, y), x, y)
-      }
-    }
-  }
-
+class LifeGrid extends Grid {
   getSurroundCount(x: number, y: number) {
     let c = 0
 
@@ -72,7 +43,7 @@ class Life {
         if (_x === x && _y === y) {
           continue
         }
-        c += this.get(_x, _y)
+        c += this.get(_x, _y) || 0
       }
     }
 
@@ -80,7 +51,7 @@ class Life {
   }
 }
 
-const status = new Life()
+const grid = new LifeGrid()
 
 watch(
   () => option.value.size,
@@ -101,23 +72,23 @@ function generate() {
   const { width, height } = ctx.canvas
   const { size } = option.value
 
-  status.w = Math.ceil(width / size)
-  status.h = Math.ceil(height / size)
+  grid.w = Math.ceil(width / size)
+  grid.h = Math.ceil(height / size)
 
-  status.data.length = 0
+  grid.clear()
 
-  status.forEach((_, x, y) => {
-    status.set(x, y, Math.random() > 0.9 ? 1 : 0)
+  grid.forEach((_, x, y) => {
+    grid.set(x, y, Math.random() > 0.9 ? 1 : 0)
   })
 }
 
 function draw() {
   const { size } = option.value
 
-  const next = new Life(status.w, status.h)
+  const next = new LifeGrid(grid.w, grid.h)
 
-  status.forEach((value, x, y) => {
-    const liveCount = status.getSurroundCount(x, y)
+  grid.forEach((value = 0, x, y) => {
+    const liveCount = grid.getSurroundCount(x, y)
     const nextStatus =
       liveCount < 2 ? 0 : liveCount === 3 && value === 0 ? 1 : liveCount > 3 ? 0 : value
 
@@ -132,7 +103,7 @@ function draw() {
     ctx.fillRect(x * size, y * size, size, size)
   })
 
-  status.data = next.data
+  grid.data = next.data
 }
 </script>
 

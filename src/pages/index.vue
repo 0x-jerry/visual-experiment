@@ -14,6 +14,10 @@ const pages = [
     title: "Conway's Game of Life",
     path: '/game-of-life',
   },
+  {
+    title: "Langton's Ant",
+    path: '/langton-ant',
+  },
 ]
 </script>
 

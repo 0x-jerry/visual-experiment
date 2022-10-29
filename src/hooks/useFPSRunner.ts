@@ -1,4 +1,4 @@
-import { generatorRunner } from '@/utils'
+import { generatorRunner, isInIframe } from '@/utils'
 import { fpsWrapper } from '@/utils/fps'
 import { MaybeRef } from '@vueuse/core'
 import { useStats } from './useStats'
@@ -7,7 +7,7 @@ export function useFPSRunner(fn: () => any, fps: MaybeRef<number> = 60) {
   const measure = useStats()
   const runner = generatorRunner(loop)
 
-  onMounted(() => runner.restart())
+  onMounted(() => !isInIframe && runner.restart())
 
   onUnmounted(() => runner.pause())
 
