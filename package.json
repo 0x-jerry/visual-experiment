@@ -4,13 +4,13 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com:0x-jerry/visual-experiment.git"
+    "url": "git+https://github.com/0x-jerry/visual-experiment.git"
   },
   "keywords": [],
   "bugs": {
-    "url": "https://github.com:0x-jerry/visual-experiment/issues"
+    "url": "https://github.com/0x-jerry/visual-experiment/issues"
   },
-  "homepage": "https://github.com:0x-jerry/visual-experiment#readme",
+  "homepage": "https://github.com/0x-jerry/visual-experiment#readme",
   "scripts": {
     "dev": "vite",
     "test": "vitest",

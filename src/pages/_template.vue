@@ -2,12 +2,20 @@
 import Layout from '@/components/Layout.vue'
 import { clear, useCanvas } from '@/canvas'
 import { Random } from '@/math'
-import { useOptionGUI, useRafStats } from '@/hooks'
+import { useOptionGUI } from '@/hooks'
+import { useFPSRunner } from '@/hooks/useFPSRunner'
 
 // ______________
 
 const option = useOptionGUI({
   color: '#f26f6f',
+  FPS: {
+    _: true,
+    step: 1,
+    value: 24,
+    min: 8,
+    max: 60,
+  },
 })
 
 // -----------
@@ -16,20 +24,12 @@ const ctx = useCanvas()
 
 const random = Random()
 
-useRafStats(() => {
-  clear(ctx)
+const fps = computed(() => option.value.FPS)
 
-  ctx.strokeStyle = option.value.color
+useFPSRunner(draw, fps)
 
-  ctx.beginPath()
-
+function draw() {
   // todo
-
-  ctx.stroke()
-})
-
-function reset() {
-  //
 }
 </script>
 
