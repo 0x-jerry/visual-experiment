@@ -2,7 +2,8 @@
 import Layout from '@/components/Layout.vue'
 import { clear, useCanvas } from '@/canvas'
 import { mapRange, Random } from '@/math'
-import { useOptionGUI, useRafStats } from '@/hooks'
+import { useOptionGUI } from '@/hooks'
+import { useFPSRunner } from '@/hooks/useFPSRunner'
 
 // ______________
 
@@ -31,6 +32,8 @@ const option = useOptionGUI({
 
 const ctx = useCanvas()
 
+const runner = useFPSRunner(draw)
+
 const lines: number[] = []
 
 const random = Random()
@@ -46,7 +49,7 @@ const getRandomValue = () => {
   lines[value] += option.value.stepSize
 }
 
-useRafStats(() => {
+function draw() {
   for (let idx = 0; idx < option.value.speed; idx++) {
     getRandomValue()
   }
@@ -64,7 +67,7 @@ useRafStats(() => {
   })
 
   ctx.stroke()
-})
+}
 
 function reset() {
   lines.splice(0)
@@ -73,7 +76,7 @@ function reset() {
 
 <template>
   <Layout title="Pseudo Random Distribution" @reset="reset">
-    <div :ref="ctx.ref" class="w-full h-full"></div>
+    <div :ref="ctx.ref" class="w-full h-full" @mouseenter="runner.resume()"></div>
   </Layout>
 </template>
 

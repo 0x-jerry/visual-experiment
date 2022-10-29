@@ -5,8 +5,15 @@ export function generatorRunner<T extends (...args: any[]) => AsyncGenerator | G
 
   const emitter = new EventEmitter<GeneratorRunnerEvent>()
 
+  const status = {
+    started: false,
+    paused: true,
+    done: false,
+  }
+
   return {
     emitter,
+    status,
     get current() {
       return runner?.current
     },
@@ -17,15 +24,23 @@ export function generatorRunner<T extends (...args: any[]) => AsyncGenerator | G
 
       runner = new GeneratorRunner(fn)
 
-      runner.on('done', () => emitter.emit('done'))
+      runner.on('done', () => {
+        status.done = true
+        emitter.emit('done')
+      })
       runner.on('next', () => emitter.emit('next'))
 
       runner.start(...args)
+
+      status.done = false
+      status.started = true
     },
     pause() {
+      status.paused = true
       return runner?.pause()
     },
     resume() {
+      status.paused = false
       return runner?.resume()
     },
   }
@@ -45,6 +60,8 @@ class GeneratorRunner<
 
   #started = false
 
+  #generator?: ReturnType<T>
+
   get current() {
     return this.#currentResult
   }
@@ -61,17 +78,9 @@ class GeneratorRunner<
     this.#started = true
     this.isPause = false
 
-    const generator = this.fn(...parameters)
+    this.#generator = this.fn(...parameters) as ReturnType<T>
 
-    while (!this.isPause) {
-      this.#currentResult = generator.next()
-      this.emit('next')
-
-      if ((await this.#currentResult).done) {
-        this.emit('done')
-        return
-      }
-    }
+    this.resume()
   }
 
   async pause() {
@@ -79,7 +88,21 @@ class GeneratorRunner<
     await this.current
   }
 
-  resume() {
+  async resume() {
     this.isPause = false
+
+    if (!this.#generator) {
+      return
+    }
+
+    while (!this.isPause) {
+      this.#currentResult = this.#generator.next()
+      this.emit('next')
+
+      if ((await this.#currentResult).done) {
+        this.emit('done')
+        return
+      }
+    }
   }
 }
