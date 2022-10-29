@@ -3,8 +3,7 @@ import Layout from '@/components/Layout.vue'
 import { useCanvas } from '@/canvas'
 import { Random } from '@/math'
 import { useOptionGUI } from '@/hooks'
-import { sleep } from '@0x-jerry/utils'
-import { generatorRunner } from '@/utils'
+import { useFPSRunner } from '@/hooks/useFPSRunner'
 
 // ______________
 
@@ -90,12 +89,12 @@ watch(
   },
 )
 
-const runner = generatorRunner(loop)
+const fps = computed(() => option.value.FPS)
+
+useFPSRunner(draw, fps)
 
 onMounted(() => {
   generate()
-
-  runner.restart()
 })
 
 function generate() {
@@ -110,14 +109,6 @@ function generate() {
   status.forEach((_, x, y) => {
     status.set(x, y, Math.random() > 0.9 ? 1 : 0)
   })
-}
-
-async function* loop() {
-  while (true) {
-    draw()
-    await sleep(1000 / option.value.FPS)
-    yield
-  }
 }
 
 function draw() {
