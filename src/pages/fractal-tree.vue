@@ -28,6 +28,10 @@ const ctx = useCanvas()
 
 const runner = generatorRunner(drawFractal)
 
+const init = () => {
+  const generator = drawFractal(ctx, option.value)
+}
+
 runner.emitter.on('done', () => {
   console.log('done')
 })

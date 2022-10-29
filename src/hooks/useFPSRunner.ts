@@ -11,7 +11,19 @@ export function useFPSRunner(fn: () => any, fps: MaybeRef<number> = 60) {
 
   onUnmounted(() => runner.pause())
 
-  if (!isInIframe) {
+  if (isInIframe) {
+    useEventListener(document, 'mouseenter', (e) => {
+      if (!runner.status.started) {
+        runner.restart()
+      } else {
+        runner.resume()
+      }
+    })
+
+    useEventListener(document, 'mouseleave', (e) => {
+      runner.pause()
+    })
+  } else {
     useEventListener('keydown', (e) => {
       if (e.code === 'Space') {
         if (!runner.status.started) {

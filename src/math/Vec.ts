@@ -1,4 +1,9 @@
-export class Vec2 {
+export interface IVec2 {
+  x: number
+  y: number
+}
+
+export class Vec2 implements IVec2 {
   static zero = new Vec2()
 
   static up = new Vec2(0, 1)

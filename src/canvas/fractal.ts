@@ -1,8 +1,8 @@
 import { deg2rad, Random } from '@/math'
-import { Vec2 } from '@/math/Vec'
+import { IVec2 } from '@/math/Vec'
 import { sleep } from '@0x-jerry/utils'
 
-interface Status extends Vec2 {
+interface Status extends IVec2 {
   deg: number
   len: number
 }

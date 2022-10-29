@@ -30,10 +30,7 @@ const scale = targetSize.w / size.w
       {{ title }}
     </div>
 
-    <div
-      class="pointer-events-none"
-      :style="{ width: targetSize.w + 'px', height: targetSize.h + 'px' }"
-    >
+    <div class="relative" :style="{ width: targetSize.w + 'px', height: targetSize.h + 'px' }">
       <iframe
         :src="getPath(path)"
         frameborder="0"
@@ -43,6 +40,7 @@ const scale = targetSize.w / size.w
           transformOrigin: 'top left',
         }"
       ></iframe>
+      <div class="absolute w-full h-full cursor-pointer pointer-events-none"></div>
     </div>
   </div>
 </template>
