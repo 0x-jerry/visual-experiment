@@ -125,7 +125,6 @@ function draw() {
   }
 
   grid.ant.add(grid.dir)
-  console.log(s, grid.dir, grid.ant)
   drawAnt()
 }
 </script>

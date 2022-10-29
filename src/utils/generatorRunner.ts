@@ -6,9 +6,12 @@ export function generatorRunner<T extends (...args: any[]) => AsyncGenerator | G
   const emitter = new EventEmitter<GeneratorRunnerEvent>()
 
   const status = {
-    started: false,
-    paused: true,
-    done: false,
+    get started() {
+      return !!runner?.started
+    },
+    get paused() {
+      return !!runner?.paused
+    },
   }
 
   return {
@@ -24,23 +27,15 @@ export function generatorRunner<T extends (...args: any[]) => AsyncGenerator | G
 
       runner = new GeneratorRunner(fn)
 
-      runner.on('done', () => {
-        status.done = true
-        emitter.emit('done')
-      })
+      runner.on('done', () => emitter.emit('done'))
       runner.on('next', () => emitter.emit('next'))
 
       runner.start(...args)
-
-      status.done = false
-      status.started = true
     },
     pause() {
-      status.paused = true
       return runner?.pause()
     },
     resume() {
-      status.paused = false
       return runner?.resume()
     },
   }
@@ -54,11 +49,11 @@ type GeneratorRunnerEvent = {
 class GeneratorRunner<
   T extends (...args: any[]) => AsyncGenerator | Generator,
 > extends EventEmitter<GeneratorRunnerEvent> {
-  isPause = false
+  paused = false
 
   #currentResult?: IteratorResult<unknown> | Promise<IteratorResult<unknown>>
 
-  #started = false
+  started = false
 
   #generator?: ReturnType<T>
 
@@ -71,12 +66,12 @@ class GeneratorRunner<
   }
 
   async start(...parameters: Parameters<T>) {
-    if (this.#started) {
+    if (this.started) {
       return
     }
 
-    this.#started = true
-    this.isPause = false
+    this.started = true
+    this.paused = false
 
     this.#generator = this.fn(...parameters) as ReturnType<T>
 
@@ -84,23 +79,24 @@ class GeneratorRunner<
   }
 
   async pause() {
-    this.isPause = true
+    this.paused = true
     await this.current
   }
 
   async resume() {
-    this.isPause = false
+    this.paused = false
 
     if (!this.#generator) {
       return
     }
 
-    while (!this.isPause) {
+    while (!this.paused) {
       this.#currentResult = this.#generator.next()
       this.emit('next')
 
       if ((await this.#currentResult).done) {
         this.emit('done')
+        this.started = false
         return
       }
     }
