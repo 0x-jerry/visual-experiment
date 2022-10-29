@@ -3,7 +3,7 @@ import Layout from '@/components/Layout.vue'
 import { clear, useCanvas } from '@/canvas'
 import { useOptionGUI } from '@/hooks'
 import { drawFractal } from '@/canvas/fractal'
-import { generatorRunner } from '@/utils'
+import { useFPSRunner } from '@/hooks/useFPSRunner'
 
 // ______________
 
@@ -26,29 +26,18 @@ const option = useOptionGUI({
 
 const ctx = useCanvas()
 
-const runner = generatorRunner(drawFractal)
-
-const init = () => {
-  const generator = drawFractal(ctx, option.value)
-}
+const runner = useFPSRunner(() => {
+  clear(ctx)
+  return drawFractal(ctx, option.value)
+})
 
 runner.emitter.on('done', () => {
   console.log('done')
 })
 
 async function reset() {
-  clear(ctx)
-
-  runner.restart(ctx, option.value)
+  runner.restart()
 }
-
-onMounted(async () => {
-  reset()
-})
-
-onUnmounted(async () => {
-  await runner.pause()
-})
 </script>
 
 <template>

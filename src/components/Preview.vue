@@ -26,7 +26,7 @@ const scale = targetSize.w / size.w
     class="transition transition-shadow shadow-lg hover:shadow-xl cursor-pointer"
     @click="$router.push(path)"
   >
-    <div class="border-b border-gray-200 px-4 py-1 text-xl">
+    <div class="border-b border-gray-200 px-4 py-1 text-xl hover:text-blue-5">
       {{ title }}
     </div>
 
