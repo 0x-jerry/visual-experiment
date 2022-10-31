@@ -12,7 +12,7 @@ interface DrawOption {
   factor: number
   startAngle: number
   color: string
-  generation: number
+  iteration: number
 }
 
 const { cos, sin } = Math
@@ -88,5 +88,5 @@ export function drawFractal(ctx: CanvasRenderingContext2D, opt: DrawOption) {
     },
   })
 
-  return treeGenerator(opt.generation)
+  return treeGenerator(opt.iteration)
 }

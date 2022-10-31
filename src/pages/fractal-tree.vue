@@ -12,7 +12,7 @@ const option = useOptionGUI({
   factor: 0.5,
   startAngle: 25,
   color: '#ccc',
-  generation: {
+  iteration: {
     _: true,
     min: 0,
     max: 10,
