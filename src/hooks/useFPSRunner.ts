@@ -1,10 +1,9 @@
 import { generatorRunner, isInIframe } from '@/utils'
-import { fpsWrapper } from '@/utils/fps'
-import { is } from '@0x-jerry/utils'
+import { is, sleep } from '@0x-jerry/utils'
 import { MaybeRef } from '@vueuse/core'
 import { useStats } from './useStats'
 
-export function useFPSRunner(fn: () => any, fps: MaybeRef<number> = 60) {
+export function useFPSRunner(fn: () => any, fps?: MaybeRef<number>) {
   const measure = useStats()
   const runner = generatorRunner(loop)
 
@@ -57,10 +56,18 @@ export function useFPSRunner(fn: () => any, fps: MaybeRef<number> = 60) {
   async function* loop() {
     const next = await fn()
 
-    const isG = isGenerator(next)
+    const isGen = isGenerator(next)
 
     while (true) {
-      await measure(() => fpsWrapper(() => (isG ? next.next() : fn()), fps))
+      const _fps = unref(fps)
+      const _fn = () => (isGen ? next.next() : fn())
+
+      const r = await measure(async () => fpsWrapper(_fn, _fps))
+
+      if (isGen && r.done) {
+        break
+      }
+
       yield
     }
   }
@@ -68,4 +75,16 @@ export function useFPSRunner(fn: () => any, fps: MaybeRef<number> = 60) {
 
 function isGenerator(target: unknown): target is AsyncGenerator | Generator {
   return is.object(target) && (Symbol.asyncIterator in target || Symbol.iterator in target)
+}
+
+async function fpsWrapper(fn: () => any, fps?: number) {
+  const begin = Date.now()
+  const r = await fn()
+  const end = Date.now()
+
+  const rest = fps ? 1000 / fps - (end - begin) : 0
+
+  await sleep(rest > 0 ? rest : 0)
+
+  return r
 }
