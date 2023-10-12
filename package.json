@@ -44,6 +44,6 @@
     "unplugin-vue-components": "^0.22.12",
     "vite": "^4.0.4",
     "vite-plugin-pages": "^0.28.0",
-    "vitest": "^0.27.1"
+    "vitest": "^0.34.0"
   }
 }
