@@ -31,7 +31,7 @@
   },
   "devDependencies": {
     "@iconify/json": "^2.2.7",
-    "@tweakpane/core": "^1.1.1",
+    "@tweakpane/core": "^2.0.0",
     "@types/dat.gui": "^0.7.7",
     "@types/node": "^18.11.18",
     "@types/stats.js": "^0.17.0",
