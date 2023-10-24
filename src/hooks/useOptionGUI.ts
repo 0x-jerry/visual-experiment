@@ -36,7 +36,7 @@ export function useOptionGUI<T extends DatGUISchemaObject>(data: T, opt?: PaneCo
     } as PaneConfig,
     opt,
   )
-  console.log(opt)
+
   onMounted(() => {
     try {
       gui = new Pane(Object.assign({ title: 'options' }, opt))

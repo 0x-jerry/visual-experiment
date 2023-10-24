@@ -41,6 +41,7 @@ export function drawFractal(ctx: CanvasRenderingContext2D, opt: DrawOption) {
   let currentStats = status.pop()
 
   const treeGenerator = LSystem({
+    iterCount: 200,
     axiom: 'X',
     rules: {
       X: 'F+[[X]-X]-F[-FX]+X',

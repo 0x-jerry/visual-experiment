@@ -1,3 +1,5 @@
+import { clamp } from '@0x-jerry/utils'
+
 export type Split<S extends string, D extends string> = string extends S
   ? string[]
   : S extends ''
@@ -12,6 +14,7 @@ export interface LSystemOption<Rule extends string> {
   actions: {
     [key in Split<Rule, ''>[number]]?: (() => any) | undefined
   }
+  iterCount?: number
 }
 
 export interface Var {
@@ -19,21 +22,33 @@ export interface Var {
   iteration: number
 }
 
-export function LSystem<Rule extends string>({ axiom, rules, actions }: LSystemOption<Rule>) {
+export function LSystem<Rule extends string>({
+  axiom,
+  rules,
+  actions,
+  iterCount,
+}: LSystemOption<Rule>) {
   return create
 
   async function* create(iteration: number) {
-    const vars: Var[] = axiom.split('').map((n) => ({
+    let vars: Var[] = axiom.split('').map((n) => ({
       type: n,
       iteration: 0,
     }))
 
+    const ITER_COUNT = clamp(iterCount || 100, 100, 1000)
+    let _iterCount = ITER_COUNT
+
     while (vars.length) {
+      if (_iterCount-- < 0) {
+        yield
+        _iterCount = ITER_COUNT
+      }
+
       const currentVar = vars.shift()!
 
       if (currentVar.iteration === iteration) {
         await takeAction()
-        yield
         continue
       }
 
@@ -42,7 +57,6 @@ export function LSystem<Rule extends string>({ axiom, rules, actions }: LSystemO
 
       if (!rule) {
         await takeAction()
-        yield
         continue
       }
 
@@ -55,9 +69,7 @@ export function LSystem<Rule extends string>({ axiom, rules, actions }: LSystemO
         })
       }
 
-      while (nextVars.length) {
-        vars.unshift(nextVars.pop()!)
-      }
+      vars = nextVars.concat(vars)
 
       function takeAction() {
         return applyAction(currentVar.type)

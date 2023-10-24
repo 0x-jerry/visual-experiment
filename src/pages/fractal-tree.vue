@@ -11,10 +11,10 @@ const option = useOptionGUI({
   length: 5,
   factor: 0.5,
   startAngle: 25,
-  color: '#ccc',
+  color: '#cf1051',
   iteration: {
     _: true,
-    min: 0,
+    min: 4,
     max: 10,
     value: 6,
     step: 1,
