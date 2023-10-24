@@ -1,6 +1,6 @@
 import { isDev } from '@/env'
 import { isInIframe } from '@/utils'
-import { is } from '@0x-jerry/utils'
+import { isFn, isObject, isPrimitive } from '@0x-jerry/utils'
 import { FolderApi, Pane } from 'tweakpane'
 import type { PaneConfig } from 'tweakpane/dist/types/pane/pane-config'
 import { ComputedRef } from 'vue'
@@ -59,16 +59,16 @@ function getDatGUISchemObjectValue<T extends DatGUISchemaObject>(data: T) {
   for (const key in data) {
     const value = data[key]
 
-    if (is.primitive(value)) {
+    if (isPrimitive(value)) {
       result[key] = value
       continue
     }
 
-    if (!is.object(value)) {
+    if (!isObject(value)) {
       continue
     }
 
-    if (is.fn(value)) {
+    if (isFn(value)) {
       continue
     }
 
@@ -110,12 +110,12 @@ function addDatGUIByType<T extends DatGUISchemaObject>(data: T, gui: FolderApi) 
   for (const key in data) {
     const value = data[key as keyof T]
 
-    if (is.primitive(value)) {
-      gui.addInput(data, key)
+    if (isPrimitive(value)) {
+      gui.addBinding(data, key)
       continue
     }
 
-    if (is.fn(value)) {
+    if (isFn(value)) {
       gui
         .addButton({
           title: key,
@@ -124,7 +124,7 @@ function addDatGUIByType<T extends DatGUISchemaObject>(data: T, gui: FolderApi) 
       continue
     }
 
-    if (!is.object(value)) {
+    if (!isObject(value)) {
       continue
     }
 
@@ -138,11 +138,11 @@ function addDatGUIByType<T extends DatGUISchemaObject>(data: T, gui: FolderApi) 
     }
 
     if (value._ === 'monitor') {
-      gui.addMonitor(value, 'value', { label: key, ...value })
+      gui.addBinding(value, 'value', { label: key, ...value })
       continue
     }
 
-    gui.addInput(value, 'value', { label: key, ...value })
+    gui.addBinding(value, 'value', { label: key, ...value })
   }
 }
 

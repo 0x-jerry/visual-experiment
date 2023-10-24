@@ -1,5 +1,5 @@
 import { generatorRunner, isInIframe } from '@/utils'
-import { is, sleep } from '@0x-jerry/utils'
+import { isObject, sleep } from '@0x-jerry/utils'
 import { MaybeRef } from '@vueuse/core'
 import { useStats } from './useStats'
 
@@ -74,7 +74,7 @@ export function useFPSRunner(fn: () => any, fps?: MaybeRef<number>) {
 }
 
 function isGenerator(target: unknown): target is AsyncGenerator | Generator {
-  return is.object(target) && (Symbol.asyncIterator in target || Symbol.iterator in target)
+  return isObject(target) && (Symbol.asyncIterator in target || Symbol.iterator in target)
 }
 
 async function fpsWrapper(fn: () => any, fps?: number) {
