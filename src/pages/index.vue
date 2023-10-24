@@ -24,7 +24,7 @@ const pages = [
   <div class="">
     <div class="px-10 py-2 text-xl border-b border-gray-200 flex items-end gap-2">
       Try some cool things using canvas
-      <small class="text-gray-5 text-sm">Hover mouse to see the animation </small>
+      <small class="text-gray-5 text-sm">Hover to see the animation </small>
       <div class="flex flex-1 justify-end items-center">
         <a
           href="https://github.com/0x-jerry/visual-experiment"
@@ -35,8 +35,9 @@ const pages = [
         </a>
       </div>
     </div>
+    <hr class="b-(solid gray-1)" />
 
-    <div class="flex flex-wrap gap-6 px-10 py-2 justify-between">
+    <div class="flex flex-wrap gap-6 px-10 py-2 justify-between cursor-pointer">
       <preview v-for="o in pages" v-bind="o"></preview>
     </div>
   </div>
