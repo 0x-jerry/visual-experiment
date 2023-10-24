@@ -5,6 +5,7 @@ import { IVec2 } from '@/math/Vec'
 interface Status extends IVec2 {
   deg: number
   len: number
+  opacity: number
 }
 
 interface DrawOption {
@@ -32,7 +33,8 @@ export function drawFractal(ctx: CanvasRenderingContext2D, opt: DrawOption) {
     x: width * (1 / 4),
     y: height,
     deg: -90 + opt.startAngle,
-    len: opt.length
+    len: opt.length,
+    opacity: 255,
   }
 
   const status: Status[] = [startStatus]
@@ -42,17 +44,18 @@ export function drawFractal(ctx: CanvasRenderingContext2D, opt: DrawOption) {
     axiom: 'X',
     rules: {
       X: 'F+[[X]-X]-F[-FX]+X',
-      F: 'FF'
+      F: 'FF',
     },
     actions: {
       F() {
         if (!currentStats) return
-        const { x, y, len } = currentStats
+        const { x, y, len, opacity } = currentStats
 
         currentStats.deg += random(-5, 5)
 
         const deg = currentStats.deg
         ctx.strokeStyle = opt.color
+        ctx.globalAlpha = opacity / 255
         ctx.lineWidth = 2
 
         ctx.beginPath()
@@ -80,12 +83,15 @@ export function drawFractal(ctx: CanvasRenderingContext2D, opt: DrawOption) {
       '['() {
         if (!currentStats) return
 
-        status.push(structuredClone(currentStats))
+        status.push({
+          ...structuredClone(currentStats),
+          opacity: currentStats.opacity * 0.7,
+        })
       },
       ']'() {
         currentStats = status.pop()
-      }
-    }
+      },
+    },
   })
 
   return treeGenerator(opt.iteration)

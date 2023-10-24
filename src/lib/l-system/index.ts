@@ -19,17 +19,13 @@ export interface Var {
   iteration: number
 }
 
-export function LSystem<Rule extends string>({
-  axiom,
-  rules,
-  actions
-}: LSystemOption<Rule>) {
+export function LSystem<Rule extends string>({ axiom, rules, actions }: LSystemOption<Rule>) {
   return create
 
   async function* create(iteration: number) {
     const vars: Var[] = axiom.split('').map((n) => ({
       type: n,
-      iteration: 0
+      iteration: 0,
     }))
 
     while (vars.length) {
@@ -55,7 +51,7 @@ export function LSystem<Rule extends string>({
       for (const action of actions) {
         nextVars.push({
           type: action,
-          iteration: currentVar.iteration + 1
+          iteration: currentVar.iteration + 1,
         })
       }
 
