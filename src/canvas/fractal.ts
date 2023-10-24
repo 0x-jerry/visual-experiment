@@ -32,7 +32,7 @@ export function drawFractal(ctx: CanvasRenderingContext2D, opt: DrawOption) {
     x: width * (1 / 4),
     y: height,
     deg: -90 + opt.startAngle,
-    len: opt.length,
+    len: opt.length
   }
 
   const status: Status[] = [startStatus]
@@ -42,7 +42,7 @@ export function drawFractal(ctx: CanvasRenderingContext2D, opt: DrawOption) {
     axiom: 'X',
     rules: {
       X: 'F+[[X]-X]-F[-FX]+X',
-      F: 'FF',
+      F: 'FF'
     },
     actions: {
       F() {
@@ -84,8 +84,8 @@ export function drawFractal(ctx: CanvasRenderingContext2D, opt: DrawOption) {
       },
       ']'() {
         currentStats = status.pop()
-      },
-    },
+      }
+    }
   })
 
   return treeGenerator(opt.iteration)

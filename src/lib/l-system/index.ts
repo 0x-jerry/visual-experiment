@@ -1,7 +1,17 @@
-export interface LSystemOption {
+export type Split<S extends string, D extends string> = string extends S
+  ? string[]
+  : S extends ''
+  ? []
+  : S extends `${infer T}${D}${infer U}`
+  ? [T, ...Split<U, D>]
+  : [S]
+
+export interface LSystemOption<Rule extends string> {
   axiom: string
-  rules: Record<string, string>
-  actions: Record<string, (() => any) | undefined>
+  rules: Record<string, Rule>
+  actions: {
+    [key in Split<Rule, ''>[number]]?: (() => any) | undefined
+  }
 }
 
 export interface Var {
@@ -9,13 +19,17 @@ export interface Var {
   iteration: number
 }
 
-export function LSystem({ axiom, rules, actions }: LSystemOption) {
+export function LSystem<Rule extends string>({
+  axiom,
+  rules,
+  actions
+}: LSystemOption<Rule>) {
   return create
 
   async function* create(iteration: number) {
     const vars: Var[] = axiom.split('').map((n) => ({
       type: n,
-      iteration: 0,
+      iteration: 0
     }))
 
     while (vars.length) {
@@ -41,7 +55,7 @@ export function LSystem({ axiom, rules, actions }: LSystemOption) {
       for (const action of actions) {
         nextVars.push({
           type: action,
-          iteration: currentVar.iteration + 1,
+          iteration: currentVar.iteration + 1
         })
       }
 
@@ -56,6 +70,7 @@ export function LSystem({ axiom, rules, actions }: LSystemOption) {
   }
 
   async function applyAction(action: string) {
+    // @ts-ignore
     const fn = actions[action]
     if (!fn) return
 
