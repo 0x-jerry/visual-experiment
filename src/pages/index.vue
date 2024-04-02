@@ -17,6 +17,10 @@ const pages = [
     title: "Langton's Ant",
     path: '/langton-ant',
   },
+  {
+    title: 'Maze Generator',
+    path: '/maze',
+  },
 ]
 </script>
 
@@ -39,6 +43,7 @@ const pages = [
 
     <div class="flex flex-wrap gap-6 px-10 py-2 justify-between cursor-pointer">
       <preview v-for="o in pages" v-bind="o"></preview>
+      <div class="w-400px h-250px"></div>
     </div>
   </div>
 </template>
