@@ -12,7 +12,7 @@ export function useCanvas() {
 
   ctx.ref = container
 
-  useEventListener('resize', () => {
+  useResizeObserver(container, () => {
     const el = container.value
     if (!el) return
 
