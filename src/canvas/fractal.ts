@@ -44,7 +44,7 @@ export function drawFractal(ctx: CanvasRenderingContext2D, opt: DrawOption) {
     iterCount: 200,
     axiom: 'X',
     rules: {
-      X: 'F+[[X]-X]-F[-FX]+X',
+      X: 'F-[[X]+X]+F[+FX]-X',
       F: 'FF',
     },
     actions: {
