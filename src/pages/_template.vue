@@ -24,9 +24,9 @@ const ctx = useCanvas()
 
 const random = Random()
 
-const fps = computed(() => option.value.FPS)
-
-useFPSRunner(draw, fps)
+useFPSRunner(draw, {
+  fps: () => option.value.FPS,
+})
 
 function draw() {
   // todo

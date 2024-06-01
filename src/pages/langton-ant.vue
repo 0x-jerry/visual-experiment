@@ -45,14 +45,11 @@ const option = useOptionGUI({
 
 const ctx = useCanvas()
 
-const random = Random()
-
 const grid = new AntGrid()
 
-useFPSRunner(
-  draw,
-  computed(() => option.value.FPS),
-)
+useFPSRunner(draw, {
+  fps: () => option.value.FPS,
+})
 
 onMounted(() => {
   generate()

@@ -1,13 +1,24 @@
 import { generatorRunner, isInIframe } from '@/utils'
 import { isObject, sleep } from '@0x-jerry/utils'
-import { MaybeRef } from '@vueuse/core'
 import { useStats } from './useStats'
+import { type MaybeRefOrGetter, toValue } from 'vue'
 
-export function useFPSRunner(fn: () => any, fps?: MaybeRef<number>) {
+export interface UseFPSRunnerOption {
+  delay?: MaybeRefOrGetter<number>
+  fps?: MaybeRefOrGetter<number>
+}
+
+export function useFPSRunner(fn: () => any, opt?: UseFPSRunnerOption) {
+  const { delay, fps } = opt || {}
+
   const measure = useStats()
   const runner = generatorRunner(loop)
 
-  onMounted(() => {
+  onMounted(async () => {
+    if (delay) {
+      await sleep(toValue(delay))
+    }
+
     runner.restart()
     if (isInIframe) {
       runner.pause()
@@ -59,7 +70,7 @@ export function useFPSRunner(fn: () => any, fps?: MaybeRef<number>) {
     const isGen = isGenerator(next)
 
     while (true) {
-      const _fps = unref(fps)
+      const _fps = toValue(fps)
       const _fn = () => (isGen ? next.next() : fn())
 
       const r = await measure(async () => fpsWrapper(_fn, _fps))

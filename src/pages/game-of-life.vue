@@ -62,7 +62,9 @@ watch(
 
 const fps = computed(() => option.value.FPS)
 
-useFPSRunner(draw, fps)
+useFPSRunner(draw, {
+  fps,
+})
 
 onMounted(() => {
   generate()

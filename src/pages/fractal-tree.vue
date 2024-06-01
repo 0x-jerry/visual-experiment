@@ -26,10 +26,15 @@ const option = useOptionGUI({
 
 const ctx = useCanvas()
 
-const runner = useFPSRunner(() => {
-  clear(ctx)
-  return drawFractal(ctx, option.value)
-})
+const runner = useFPSRunner(
+  () => {
+    clear(ctx)
+    return drawFractal(ctx, option.value)
+  },
+  {
+    delay: 100,
+  },
+)
 
 runner.emitter.on('done', () => {
   console.log('done')
