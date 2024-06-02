@@ -4,8 +4,11 @@ import { clear, useCanvas } from '@/canvas'
 import { useOptionGUI } from '@/hooks'
 import { drawFractal } from '@/canvas/fractal'
 import { useFPSRunner } from '@/hooks/useFPSRunner'
+import { useUrlSearchParams } from '@vueuse/core'
 
 // ______________
+
+const routePrams = useUrlSearchParams<{ iteration: string; length: string }>('hash')
 
 const option = useOptionGUI({
   length: 5,
@@ -29,7 +32,15 @@ const ctx = useCanvas()
 const runner = useFPSRunner(
   () => {
     clear(ctx)
-    return drawFractal(ctx, option.value)
+    const _conf = option.value
+    const opt = {
+      ...option.value,
+      iteration: +routePrams.iteration || _conf.iteration,
+      length: +routePrams.length || _conf.length,
+    }
+
+    console.log(opt)
+    return drawFractal(ctx, opt)
   },
   {
     delay: 100,
