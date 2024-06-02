@@ -43,7 +43,7 @@ const runner = useFPSRunner(
     return drawFractal(ctx, opt)
   },
   {
-    delay: 100,
+    delay: 500,
   },
 )
 

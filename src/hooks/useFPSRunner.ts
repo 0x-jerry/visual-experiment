@@ -19,9 +19,8 @@ export function useFPSRunner(fn: () => any, opt?: UseFPSRunnerOption) {
       await sleep(toValue(delay))
     }
 
-    runner.restart()
-    if (isInIframe) {
-      runner.pause()
+    if (!isInIframe) {
+      runner.restart()
     }
   })
 
