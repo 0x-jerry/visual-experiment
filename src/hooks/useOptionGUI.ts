@@ -1,33 +1,36 @@
 import { isDev } from '@/env'
 import { isInIframe } from '@/utils'
-import { isFn, isObject, isPrimitive } from '@0x-jerry/utils'
+import { isFn, isObject } from '@0x-jerry/utils'
 import { FolderApi, Pane } from 'tweakpane'
 import type { PaneConfig } from 'tweakpane/dist/types/pane/pane-config'
-import { ComputedRef } from 'vue'
 
-export type UseOptionGUIResult<T extends DatGUISchemaObject> = ComputedRef<
-  ExtractDatGUISchemaObject<T>
->
+export type UseOptionGUIResult<T extends DatGUISchemaObject> = ExtractDatGUISchemaObject<T>
 
 export function useOptionGUI<T extends DatGUISchemaObject>(data: T, opt?: PaneConfig) {
-  const route = useRoute()
+  const params = useUrlSearchParams('hash')
 
-  const cache = isDev ? useLocalStorage<T>(route.fullPath, data) : ref(data)
-  cache.value = Object.assign({}, data, cache.value)
-  if (isDev) {
-    ;(cache.value as any).clearCache = () => {
-      resetCache()
-      location.reload()
-    }
-  }
+  const configs = normalizeDatGUISchema(data)
 
-  const result = computed(() => getDatGUISchemObjectValue(cache.value)) as UseOptionGUIResult<T>
+  const _result = composeValues(configs, params as Record<string, string>) as UseOptionGUIResult<T>
+
+  const result = ref(_result)
 
   if (isInIframe) {
     return result
   }
 
+  // add reset button
   let gui: Pane | null = null
+
+  configs.push({
+    _: 'button',
+    _key: 'reset configs',
+    value: () => {
+      const defaultValue = composeValues(configs, {})
+      Object.assign(result.value as any, structuredClone(defaultValue))
+      gui?.refresh()
+    },
+  })
 
   opt = Object.assign(
     {
@@ -37,17 +40,18 @@ export function useOptionGUI<T extends DatGUISchemaObject>(data: T, opt?: PaneCo
     opt,
   )
 
-  onMounted(() => {
-    try {
-      gui = new Pane(Object.assign({ title: 'options' }, opt))
-      addDatGUIByType(cache.value, gui)
-    } catch (error) {
-      gui?.dispose()
+  watch(
+    result,
+    () => {
+      console.log(result.value)
+      Object.assign(params, result.value)
+    },
+    { deep: true },
+  )
 
-      cache.value = data
-      gui = new Pane(Object.assign({ title: 'options' }, opt))
-      addDatGUIByType(cache.value, gui)
-    }
+  onMounted(() => {
+    gui = new Pane(Object.assign({ title: 'options' }, opt))
+    addDatGUIByType(result, configs, gui)
   })
 
   onUnmounted(() => {
@@ -55,40 +59,61 @@ export function useOptionGUI<T extends DatGUISchemaObject>(data: T, opt?: PaneCo
   })
 
   return result
-
-  function resetCache() {
-    cache.value = { ...data }
-  }
 }
 
-function getDatGUISchemObjectValue<T extends DatGUISchemaObject>(data: T) {
-  const result: any = {}
+function composeValues(configs: DatGUISchema[], urlParams: Record<string, string>) {
+  const result: Record<string, any> = {}
 
-  for (const key in data) {
-    const value = data[key]
+  for (const conf of configs) {
+    const { _, _key } = conf
 
-    if (isPrimitive(value)) {
-      result[key] = value
+    if (_ === 'button') {
       continue
     }
 
-    if (!isObject(value)) {
-      continue
-    }
+    const urlParamValue = urlParams[_key!]
 
-    if (isFn(value)) {
-      continue
-    }
+    const value = urlParamValue ?? conf.value
 
-    if (!isDatGUISchema(value)) {
-      result[key] = getDatGUISchemObjectValue(value)
-      continue
+    if (_ === 'boolean') {
+      result[_key!] = !!value
+    } else if (_ === 'string') {
+      result[_key!] = String(value)
+    } else if (_ === 'number') {
+      result[_key!] = parseFloat(value)
+    } else {
+      console.error(conf)
     }
-
-    result[key] = value.value
   }
 
-  return result as ExtractDatGUISchemaObject<T>
+  return result
+}
+
+function isRecord(t: unknown): t is Record<string, any> {
+  return isObject(t)
+}
+
+function normalizeDatGUISchema(t: DatGUISchemaObject): DatGUISchema[] {
+  return Object.entries(t).map(([key, conf]) => {
+    if (isFn(conf)) {
+      return {
+        _: 'button',
+        _key: key,
+        value: conf,
+      }
+    }
+
+    const _conf = isRecord(conf) ? conf : { _: true, value: conf }
+    const _type = isRecord(conf) ? typeof conf.value : typeof conf
+
+    const type = _conf._ === true ? _type : _conf._
+
+    return {
+      ..._conf,
+      _key: key,
+      _: type as any,
+    }
+  })
 }
 
 type ExtractDatGUISchemaObject<T extends DatGUISchemaObject> = {
@@ -96,64 +121,32 @@ type ExtractDatGUISchemaObject<T extends DatGUISchemaObject> = {
     ? V
     : T[key] extends string | number | boolean
     ? T[key]
-    : T[key] extends DatGUISchemaObject
-    ? ExtractDatGUISchemaObject<T[key]>
     : never
 }
 
-export type DatGUISchema<V = any, T = any> = {
-  _: boolean | string
+export type DatGUISchema<V = any> = {
+  _: true | 'button' | 'number' | 'string' | 'boolean'
+  _key?: string
   value: V
   min?: number
   max?: number
   step?: number
-  options?: T[] | {}
+  options?: any[] | {}
 }
 
 export type DatGUISchemaObject = {
-  [key: string]: string | number | boolean | DatGUISchema | DatGUISchemaObject | (() => any)
+  [key: string]: string | number | boolean | DatGUISchema | (() => any)
 }
 
-function addDatGUIByType<T extends DatGUISchemaObject>(data: T, gui: FolderApi) {
-  for (const key in data) {
-    const value = data[key as keyof T]
+function addDatGUIByType(data: Ref<any>, configs: DatGUISchema[], gui: FolderApi) {
+  for (const conf of configs) {
+    const { _, _key, value, ...other } = conf
 
-    if (isPrimitive(value)) {
-      gui.addBinding(data, key)
+    if (_ === 'button') {
+      gui.addButton({ title: _key! }).on('click', value)
       continue
     }
 
-    if (isFn(value)) {
-      gui
-        .addButton({
-          title: key,
-        })
-        .on('click', value)
-      continue
-    }
-
-    if (!isObject(value)) {
-      continue
-    }
-
-    if (!isDatGUISchema(value)) {
-      const folderGui = gui.addFolder({
-        title: key,
-      })
-
-      addDatGUIByType(value, folderGui)
-      continue
-    }
-
-    if (value._ === 'monitor') {
-      gui.addBinding(value, 'value', { label: key, ...value })
-      continue
-    }
-
-    gui.addBinding(value, 'value', { label: key, ...value })
+    gui.addBinding(data.value, _key!, other)
   }
-}
-
-function isDatGUISchema(o: any): o is DatGUISchema {
-  return o?.['_']
 }
