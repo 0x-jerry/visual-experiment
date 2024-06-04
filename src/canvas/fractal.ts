@@ -95,5 +95,5 @@ export function drawFractal(ctx: CanvasRenderingContext2D, opt: DrawOption) {
     },
   })
 
-  return treeGenerator(opt.iteration)
+  return treeGenerator.create(opt.iteration)
 }

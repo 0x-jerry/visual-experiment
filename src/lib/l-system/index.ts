@@ -28,7 +28,10 @@ export function LSystem<Rule extends string>({
   actions,
   iterCount,
 }: LSystemOption<Rule>) {
-  return create
+  return {
+    create,
+    get,
+  }
 
   async function* create(iteration: number) {
     let vars: Var[] = axiom.split('').map((n) => ({
@@ -75,6 +78,24 @@ export function LSystem<Rule extends string>({
         return applyAction(currentVar.type)
       }
     }
+  }
+
+  function get(iteration: number) {
+    let vars: string[] = axiom.split('')
+
+    for (let idx = 0; idx < iteration; idx++) {
+      const nextVars: string[] = []
+
+      for (const type of vars) {
+        const rule = rules[type]
+        const _nextVars: string[] = rule ? rule.split('') : [type]
+        nextVars.push(..._nextVars)
+      }
+
+      vars = nextVars
+    }
+
+    return vars
   }
 
   async function applyAction(action: string) {
