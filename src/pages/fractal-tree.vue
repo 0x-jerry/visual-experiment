@@ -1,9 +1,8 @@
 <script lang="ts" setup>
 import Layout from '@/components/Layout.vue'
-import { clear, useCanvas } from '@/canvas'
-import { useOptionGUI } from '@/hooks'
+import { clear } from '@/canvas'
+import { useCanvasRunner, useOptionGUI } from '@/hooks'
 import { drawFractal } from '@/canvas/fractal'
-import { useFPSRunner } from '@/hooks/useFPSRunner'
 
 // ______________
 
@@ -24,19 +23,12 @@ const option = useOptionGUI({
 
 // -----------
 
-const ctx = useCanvas()
+const runner = useCanvasRunner((ctx) => {
+  clear(ctx)
+  const _conf = option.value
 
-const runner = useFPSRunner(
-  () => {
-    clear(ctx)
-    const _conf = option.value
-
-    return drawFractal(ctx, _conf)
-  },
-  {
-    delay: 500,
-  },
-)
+  return drawFractal(ctx, _conf)
+})
 
 runner.emitter.on('done', () => {
   console.log('done')
@@ -49,7 +41,7 @@ async function reset() {
 
 <template>
   <Layout title="Fractal Tree">
-    <div :ref="ctx.ref" class="w-full h-full"></div>
+    <div :ref="runner.ctx.ref" class="w-full h-full"></div>
   </Layout>
 </template>
 

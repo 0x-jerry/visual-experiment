@@ -1,54 +1,21 @@
-import { generatorRunner, isInIframe } from '@/utils'
+import { generatorRunner } from '@/utils'
 import { isObject, sleep } from '@0x-jerry/utils'
 import { useStats } from './useStats'
 import { type MaybeRefOrGetter, toValue } from 'vue'
 
 export interface UseFPSRunnerOption {
-  delay?: MaybeRefOrGetter<number>
   fps?: MaybeRefOrGetter<number>
 }
 
 export function useFPSRunner(fn: () => any, opt?: UseFPSRunnerOption) {
-  const { delay, fps } = opt || {}
+  const { fps } = opt || {}
 
   const measure = useStats()
   const runner = generatorRunner(loop)
 
-  const route = useRoute()
-
-  onMounted(async () => {
-    if (delay) {
-      await sleep(toValue(delay))
-    }
-
-    const autoStart = route.query.autoStart !== '0'
-    if (autoStart) {
-      runner.restart()
-    }
-  })
-
   onUnmounted(() => runner.pause())
 
-  useEventListener(document, 'click', (e) => {
-    if (!runner.status.started) {
-      runner.restart()
-    } else if (runner.status.paused) {
-      runner.resume()
-    } else {
-      runner.pause()
-    }
-  })
-
-  return {
-    ...runner,
-    resume() {
-      if (!runner.status.started) {
-        runner.restart()
-      } else {
-        runner.resume()
-      }
-    },
-  }
+  return runner
 
   async function* loop() {
     const next = await fn()
