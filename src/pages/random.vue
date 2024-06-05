@@ -76,7 +76,7 @@ function reset() {
 
 <template>
   <Layout title="Pseudo Random Distribution" @reset="reset">
-    <div :ref="ctx.ref" class="w-full h-full" @mouseenter="runner.resume()"></div>
+    <div :ref="ctx.ref" class="w-full h-full"></div>
   </Layout>
 </template>
 

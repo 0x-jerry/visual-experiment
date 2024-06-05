@@ -14,43 +14,31 @@ export function useFPSRunner(fn: () => any, opt?: UseFPSRunnerOption) {
   const measure = useStats()
   const runner = generatorRunner(loop)
 
+  const route = useRoute()
+
+
   onMounted(async () => {
     if (delay) {
       await sleep(toValue(delay))
     }
 
-    if (!isInIframe) {
+    const autoStart = route.query.autoStart != '0'
+    if (autoStart) {
       runner.restart()
     }
   })
 
   onUnmounted(() => runner.pause())
 
-  if (isInIframe) {
-    useEventListener(document, 'mouseenter', (e) => {
-      if (!runner.status.started) {
-        runner.restart()
-      } else {
-        runner.resume()
-      }
-    })
-
-    useEventListener(document, 'mouseleave', (e) => {
+  useEventListener(document, 'click', (e) => {
+    if (!runner.status.started) {
+      runner.restart()
+    } else if (runner.status.paused) {
+      runner.resume()
+    } else {
       runner.pause()
-    })
-  } else {
-    useEventListener('keydown', (e) => {
-      if (e.code === 'Space') {
-        if (!runner.status.started) {
-          runner.restart()
-        } else if (runner.status.paused) {
-          runner.resume()
-        } else {
-          runner.pause()
-        }
-      }
-    })
-  }
+    }
+  })
 
   return {
     ...runner,
