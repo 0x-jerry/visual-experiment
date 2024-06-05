@@ -45,7 +45,7 @@ runner.emitter.on('done', () => {
 })
 
 async function reset() {
-  runner.restart()
+  runner.recreate()
 }
 </script>
 

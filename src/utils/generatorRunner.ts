@@ -14,13 +14,13 @@ export function generatorRunner<T extends (...args: any[]) => AsyncGenerator | G
     },
   }
 
-  return {
+  const ctx = {
     emitter,
     status,
     get current() {
       return runner?.current
     },
-    async restart(...args: Parameters<T>) {
+    async recreate(...args: Parameters<T>) {
       if (runner) {
         await runner.pause()
       }
@@ -30,7 +30,11 @@ export function generatorRunner<T extends (...args: any[]) => AsyncGenerator | G
       runner.on('done', () => emitter.emit('done'))
       runner.on('next', () => emitter.emit('next'))
 
-      runner.start(...args)
+      runner.create(...args)
+    },
+    async restart(...args: Parameters<T>) {
+      await ctx.recreate(...args)
+      ctx.resume()
     },
     pause() {
       return runner?.pause()
@@ -39,6 +43,8 @@ export function generatorRunner<T extends (...args: any[]) => AsyncGenerator | G
       return runner?.resume()
     },
   }
+
+  return ctx
 }
 
 type GeneratorRunnerEvent = {
@@ -65,17 +71,15 @@ class GeneratorRunner<
     super()
   }
 
-  async start(...parameters: Parameters<T>) {
+  async create(...parameters: Parameters<T>) {
     if (this.started) {
       return
     }
 
     this.started = true
-    this.paused = false
+    this.paused = true
 
     this.#generator = this.fn(...parameters) as ReturnType<T>
-
-    this.resume()
   }
 
   async pause() {
@@ -84,11 +88,11 @@ class GeneratorRunner<
   }
 
   async resume() {
-    this.paused = false
-
-    if (!this.#generator) {
+    if (!this.started || !this.#generator) {
       return
     }
+
+    this.paused = false
 
     while (!this.paused) {
       this.#currentResult = this.#generator.next()

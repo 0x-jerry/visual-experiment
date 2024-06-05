@@ -15,9 +15,15 @@ export function useCanvasRunner(fn: (ctx: UseCanvasContext) => any, opt?: UseCan
 
   onMounted(async () => {
     const autoStart = route.query.autoStart !== '0'
+
     if (autoStart) {
+      await runner.recreate()
+
       await sleep(500)
-      runner.restart()
+
+      if (visible.value) {
+        runner.resume()
+      }
     }
   })
 
@@ -29,7 +35,7 @@ export function useCanvasRunner(fn: (ctx: UseCanvasContext) => any, opt?: UseCan
     }
   })
 
-  useEventListener(ctx.ref, 'click', (e) => {
+  useEventListener(ctx.ref, 'click', async (e) => {
     if (!runner.status.started) {
       runner.restart()
     } else if (runner.status.paused) {
