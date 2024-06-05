@@ -16,13 +16,12 @@ export function useFPSRunner(fn: () => any, opt?: UseFPSRunnerOption) {
 
   const route = useRoute()
 
-
   onMounted(async () => {
     if (delay) {
       await sleep(toValue(delay))
     }
 
-    const autoStart = route.query.autoStart != '0'
+    const autoStart = route.query.autoStart !== '0'
     if (autoStart) {
       runner.restart()
     }
