@@ -1,9 +1,7 @@
 <script lang="ts" setup>
 import Layout from '@/components/Layout.vue'
-import { useCanvas } from '@/canvas'
 import { Random } from '@/math'
-import { useOptionGUI } from '@/hooks'
-import { useFPSRunner } from '@/hooks/useFPSRunner'
+import { useCanvasRunner, useOptionGUI } from '@/hooks'
 import { Grid } from '@/math/grid'
 
 // ______________
@@ -29,8 +27,6 @@ const option = useOptionGUI({
 })
 
 // -----------
-
-const ctx = useCanvas()
 
 const random = Random()
 
@@ -60,10 +56,8 @@ watch(
   },
 )
 
-const fps = computed(() => option.value.FPS)
-
-useFPSRunner(draw, {
-  fps,
+const runner = useCanvasRunner(draw, {
+  fps: () => option.value.FPS
 })
 
 onMounted(() => {
@@ -71,7 +65,9 @@ onMounted(() => {
 })
 
 function generate() {
-  const { width, height } = ctx.canvas
+  const canvas = runner.ctx.canvas
+
+  const { width, height } = canvas
   const { size } = option.value
 
   grid.w = Math.ceil(width / size)
@@ -84,7 +80,7 @@ function generate() {
   })
 }
 
-function draw() {
+function draw(ctx: CanvasRenderingContext2D) {
   const { size } = option.value
 
   const next = new LifeGrid(grid.w, grid.h)
@@ -111,7 +107,7 @@ function draw() {
 
 <template>
   <Layout title="Conway's Game of Life">
-    <div :ref="ctx.ref" class="w-full h-full"></div>
+    <div :ref="runner.ctx.ref" class="w-full h-full"></div>
   </Layout>
 </template>
 
