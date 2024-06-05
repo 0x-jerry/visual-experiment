@@ -1,9 +1,8 @@
 <script lang="ts" setup>
 import Layout from '@/components/Layout.vue'
-import { clear, useCanvas } from '@/canvas'
+import { clear } from '@/canvas'
 import { mapRange, Random } from '@/math'
-import { useOptionGUI } from '@/hooks'
-import { useFPSRunner } from '@/hooks/useFPSRunner'
+import { useCanvasRunner, useOptionGUI } from '@/hooks'
 
 // ______________
 
@@ -30,16 +29,14 @@ const option = useOptionGUI({
 
 // -----------
 
-const ctx = useCanvas()
-
-const runner = useFPSRunner(draw)
+const runner = useCanvasRunner(draw)
 
 const lines: number[] = []
 
 const random = Random()
 
 const getRandomValue = () => {
-  const w = ctx.canvas.width
+  const w = runner.ctx.canvas.width
 
   let value = random()
 
@@ -49,7 +46,7 @@ const getRandomValue = () => {
   lines[value] += option.value.stepSize
 }
 
-function draw() {
+function draw(ctx: CanvasRenderingContext2D) {
   for (let idx = 0; idx < option.value.speed; idx++) {
     getRandomValue()
   }
@@ -76,7 +73,7 @@ function reset() {
 
 <template>
   <Layout title="Pseudo Random Distribution" @reset="reset">
-    <div :ref="ctx.ref" class="w-full h-full"></div>
+    <div :ref="runner.ctx.ref" class="w-full h-full"></div>
   </Layout>
 </template>
 

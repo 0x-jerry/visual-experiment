@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import Layout from '@/components/Layout.vue'
 import { clear, useCanvas } from '@/canvas'
-import { useOptionGUI } from '@/hooks'
+import { useCanvasRunner, useOptionGUI } from '@/hooks'
 import { useFPSRunner } from '@/hooks/useFPSRunner'
 import { drawMaze } from '@/canvas/maze'
 
@@ -29,9 +29,7 @@ const option = useOptionGUI({
 
 // -----------
 
-const ctx = useCanvas()
-
-const runner = useFPSRunner(() => {
+const runner = useCanvasRunner(ctx => {
   clear(ctx)
   const opt = option.value
 
@@ -53,7 +51,7 @@ async function reset() {
 
 <template>
   <Layout title="Maze Generator">
-    <div :ref="ctx.ref" class="w-full h-full"></div>
+    <div :ref="runner.ctx.ref" class="w-full h-full"></div>
   </Layout>
 </template>
 
