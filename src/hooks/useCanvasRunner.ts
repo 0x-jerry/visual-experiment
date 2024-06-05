@@ -1,10 +1,8 @@
 import { UseCanvasContext, useCanvas } from "@/canvas";
 import { UseFPSRunnerOption, useFPSRunner } from "./useFPSRunner";
-import { MaybeRefOrGetter } from "vue";
 import { sleep } from "@0x-jerry/utils";
 
 export interface UseCanvasRunnerOption extends UseFPSRunnerOption {
-  delay?: MaybeRefOrGetter<number>
 }
 
 export function useCanvasRunner(fn: (ctx: UseCanvasContext) => any, opt?: UseCanvasRunnerOption) {
@@ -16,16 +14,12 @@ export function useCanvasRunner(fn: (ctx: UseCanvasContext) => any, opt?: UseCan
   const route = useRoute()
 
   onMounted(async () => {
-    if (opt?.delay) {
-      await sleep(toValue(opt.delay))
-    }
-
     const autoStart = route.query.autoStart !== '0'
     if (autoStart) {
+      await sleep(500)
       runner.restart()
     }
   })
-
 
   watch(visible, () => {
     if (visible.value) {
