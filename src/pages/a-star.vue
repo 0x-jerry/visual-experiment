@@ -1,32 +1,22 @@
 <script lang="ts" setup>
 import Layout from '@/components/Layout.vue'
 import { useCanvasRunner, useOptionGUI } from '@/hooks'
-import { clear } from '@/canvas'
+import { drawAStar } from '@/canvas/aStar'
 
 // ______________
 
 const option = useOptionGUI({
-  color: '#f26f6f',
-  FPS: {
-    _: true,
-    step: 1,
-    value: 24,
-    min: 8,
-    max: 60,
-  },
+  color: '#ffffff',
+  obstacleColor: '#f26f6f',
 })
 
 // -----------
 
-const runner = useCanvasRunner(
-  (ctx) => {
-    clear(ctx)
-    // todo
-  },
-  {
-    fps: () => option.value.fps,
-  },
-)
+const runner = useCanvasRunner((ctx) => {
+  const _conf = option.value
+
+  return drawAStar(ctx, _conf)
+})
 </script>
 
 <template>

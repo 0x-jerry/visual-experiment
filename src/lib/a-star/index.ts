@@ -1,7 +1,7 @@
 import { Grid, type IVec2 } from '@/math'
 import { MinHeap } from 'data-structure-typed'
 
-enum CellType {
+export enum CellType {
   Walkable = 1 << 1,
   Visited = 1 << 3,
 }
@@ -50,6 +50,10 @@ export class AStar {
 
   constructor(readonly w: number, readonly h: number) {
     this.grid = new Grid(w, h)
+    this.grid.forEach((_, x, y) => {
+      this.grid.set(x, y, CellType.Walkable)
+    })
+
     this.gScore = new GridMap<number>(this.grid, Infinity)
     this.fScore = new GridMap<number>(this.grid, Infinity)
     this.cameFrom = new GridMap<IVec2>(this.grid)
@@ -84,6 +88,7 @@ export class AStar {
     opt: {
       heuristic: (from: IVec2, to: IVec2) => number
       distance: (from: IVec2, to: IVec2) => number
+      draw: () => void
     },
   ) {
     this.fScore.clear()
@@ -105,6 +110,7 @@ export class AStar {
     this.openSet.add(start)
 
     while (!this.openSet.isEmpty()) {
+      opt.draw()
       yield
 
       const current = this.openSet.poll()!
