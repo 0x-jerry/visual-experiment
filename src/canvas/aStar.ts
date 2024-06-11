@@ -1,46 +1,79 @@
 import { AStar, CellType } from '@/lib/a-star'
 
 export interface DrawAStarOption {
-  color: string
-  obstacleColor: string
-
-  /**
-   * @default 1
-   */
-  cellSize?: number
+  cellSize: number
 }
 
 export function drawAStar(ctx: CanvasRenderingContext2D, opt: DrawAStarOption) {
-  const { cellSize = 1 } = opt
+  const { cellSize } = opt
+
   const { width, height } = ctx.canvas
+  const w = ~~(width / cellSize)
+  const h = ~~(height / cellSize)
 
-  const pathFinding = new AStar(width, height)
+  const pathFinding = new AStar(w, h)
 
-  const g = pathFinding.resolve(
-    { x: 10, y: 10 },
-    { x: width - 10, y: height - 10 },
-    {
+  const startPoint = { x: 1, y: 1 }
+  const endPoint = { x: w - 1, y: h - 1 }
+
+  return start()
+
+  function* start() {
+    const iterator = pathFinding.resolve(startPoint, endPoint, {
       heuristic(from, to) {
-        return Math.sqrt(Math.pow(from.x - to.x, 2) + Math.pow(from.y - to.y, 2))
+        return Math.pow(from.x - to.x, 2) + Math.pow(from.y - to.y, 2)
       },
       distance(from, to) {
         return Math.sqrt(Math.pow(from.x - to.x, 2) + Math.pow(from.y - to.y, 2))
       },
-      draw,
-    },
-  )
+    })
 
-  return g
+    let v = iterator.next()
+
+    yield
+    while (!v.done) {
+      v = iterator.next()
+      draw()
+      yield
+    }
+  }
 
   function draw() {
+    const colors = {
+      color: '#ffffff',
+      visitedColor: '#3c85d2',
+      obstacleColor: '#f26f6f',
+      startColor: '#ff0000',
+      endColor: '#ff0000',
+      pathColor: '#00ff00',
+    }
+
     pathFinding.grid.forEach((v, x, y) => {
-      if ((v ?? 0) & CellType.Walkable) {
-        ctx.fillStyle = opt.color
+      if (pathFinding._rearch(startPoint, { x, y })) {
+        ctx.fillStyle = colors.startColor
+      } else if (pathFinding._rearch(endPoint, { x, y })) {
+        ctx.fillStyle = colors.endColor
+      } else if (pathFinding.cameFrom.has({ x, y })) {
+        ctx.fillStyle = colors.visitedColor
+      } else if ((v ?? 0) & CellType.Walkable) {
+        ctx.fillStyle = colors.color
       } else {
-        ctx.fillStyle = opt.obstacleColor
+        ctx.fillStyle = colors.obstacleColor
       }
 
-      ctx.fillRect(x, y, cellSize, cellSize)
+      ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize)
     })
+
+    const current = pathFinding.openSet.peek()
+    if (current) {
+      const output = pathFinding._reconstructPath(current)
+
+      for (const p of output) {
+        const { x, y } = p
+        ctx.fillStyle = colors.pathColor
+
+        ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize)
+      }
+    }
   }
 }

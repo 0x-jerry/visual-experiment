@@ -3,7 +3,6 @@ import { MinHeap } from 'data-structure-typed'
 
 export enum CellType {
   Walkable = 1 << 1,
-  Visited = 1 << 3,
 }
 
 class GridMap<V> {
@@ -88,7 +87,6 @@ export class AStar {
     opt: {
       heuristic: (from: IVec2, to: IVec2) => number
       distance: (from: IVec2, to: IVec2) => number
-      draw: () => void
     },
   ) {
     this.fScore.clear()
@@ -110,7 +108,6 @@ export class AStar {
     this.openSet.add(start)
 
     while (!this.openSet.isEmpty()) {
-      opt.draw()
       yield
 
       const current = this.openSet.poll()!
