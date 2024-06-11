@@ -1,6 +1,5 @@
 import { LSystem } from '@/lib'
-import { deg2rad, Random } from '@/math'
-import { IVec2 } from '@/math/Vec'
+import { deg2rad, Random, type IVec2 } from '@/math'
 
 interface Status extends IVec2 {
   deg: number

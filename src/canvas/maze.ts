@@ -1,5 +1,5 @@
 import { MazeGenerator, Wall } from '@/lib/maze-generator'
-import { IVec2, Vec2 } from '@/math'
+import { type IVec2, Vec2 } from '@/math'
 
 export interface DrawMazeOption {
   size: IVec2

@@ -1,5 +1,5 @@
 import Stats from 'stats.js'
-import { Awaitable, Fn } from '@0x-jerry/utils'
+import type { Awaitable, Fn } from '@0x-jerry/utils'
 import { isInIframe } from '@/utils'
 
 export function useStats() {

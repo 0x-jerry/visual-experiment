@@ -1,4 +1,4 @@
-import { IVec2, Random, Vec2 } from '@/math'
+import { type IVec2, Random, Vec2 } from '@/math'
 
 export enum Wall {
   Up = 1,

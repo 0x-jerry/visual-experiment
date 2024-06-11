@@ -1,10 +1,8 @@
 <script lang="ts" setup>
 import Layout from '@/components/Layout.vue'
 import { clear } from '@/canvas'
-import { PI } from '@/math'
+import { PI, Vec2, Grid } from '@/math'
 import { useCanvasRunner, useOptionGUI } from '@/hooks'
-import { Grid } from '@/math/grid'
-import { Vec2 } from '@/math/Vec'
 
 class AntGrid extends Grid {
   ant: Vec2 = Vec2.zero
@@ -129,3 +127,4 @@ function drawAnt(ctx: CanvasRenderingContext2D) {
 </template>
 
 <style lang="less" scoped></style>
+@/math/vec2

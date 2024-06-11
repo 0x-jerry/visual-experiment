@@ -1,5 +1,5 @@
-import { UseCanvasContext, useCanvas } from "@/canvas";
-import { UseFPSRunnerOption, useFPSRunner } from "./useFPSRunner";
+import { type UseCanvasContext, useCanvas } from "@/canvas";
+import { type UseFPSRunnerOption, useFPSRunner } from "./useFPSRunner";
 import { sleep } from "@0x-jerry/utils";
 
 export interface UseCanvasRunnerOption extends UseFPSRunnerOption {
