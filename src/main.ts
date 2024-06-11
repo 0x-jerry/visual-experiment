@@ -1,4 +1,4 @@
-import { createApp, Plugin } from 'vue'
+import { createApp, type Plugin } from 'vue'
 import App from './App.vue'
 
 import 'normalize.css'
