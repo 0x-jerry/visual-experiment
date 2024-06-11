@@ -24,7 +24,7 @@ const runner = useCanvasRunner(
     // todo
   },
   {
-    fps: () => option.value.fps,
+    fps: () => option.value.FPS,
   },
 )
 </script>
