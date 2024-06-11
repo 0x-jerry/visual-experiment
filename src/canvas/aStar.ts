@@ -16,6 +16,14 @@ export function drawAStar(ctx: CanvasRenderingContext2D, opt: DrawAStarOption) {
   const startPoint = { x: 1, y: 1 }
   const endPoint = { x: w - 1, y: h - 1 }
 
+  for (let y = 0; y < endPoint.y - 1; y++) {
+    pathFinding.grid.set(10, y, CellType.NonWalkable)
+  }
+
+  for (let y = h / 2; y < h; y++) {
+    pathFinding.grid.set(20, y, CellType.NonWalkable)
+  }
+
   return start()
 
   function* start() {
@@ -30,12 +38,21 @@ export function drawAStar(ctx: CanvasRenderingContext2D, opt: DrawAStarOption) {
 
     let v = iterator.next()
 
+    const maxStep = 50
+    let steps = maxStep
+
     yield
     while (!v.done) {
       v = iterator.next()
-      draw()
-      yield
+
+      if (steps-- < 0) {
+        steps = maxStep
+        draw()
+        yield
+      }
     }
+
+    draw()
   }
 
   function draw() {

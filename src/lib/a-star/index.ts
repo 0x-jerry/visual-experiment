@@ -2,7 +2,8 @@ import { Grid, type IVec2 } from '@/math'
 import { MinHeap } from 'data-structure-typed'
 
 export enum CellType {
-  Walkable = 1 << 1,
+  Walkable = 1,
+  NonWalkable = 2,
 }
 
 class GridMap<V> {

@@ -10,7 +10,7 @@ const option = useOptionGUI({
     _: 'number',
     value: 10,
     step: 1,
-    min: 10,
+    min: 1,
     max: 50,
   },
   FPS: {
