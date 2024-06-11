@@ -6,7 +6,11 @@ export class Grid<S extends any = Status> {
   constructor(public w: number = 0, public h: number = 0) {}
 
   get(x: number, y: number): S | undefined {
-    const idx = y * this.w + x
+    if (x < 0 || x >= this.w || y < 0 || y >= this.h) {
+      return
+    }
+
+    const idx = this.getIndex(x, y)
 
     return this.data.at(idx)
   }
@@ -19,6 +23,11 @@ export class Grid<S extends any = Status> {
     const idx = y * this.w + x
 
     this.data[idx] = v
+  }
+
+  getIndex(x: number, y: number) {
+    const idx = y * this.w + x
+    return idx
   }
 
   forEach(cb: (v: S | undefined, x: number, y: number) => any) {

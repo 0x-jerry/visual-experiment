@@ -23,6 +23,7 @@
     "@0x-jerry/vue-kit": "^2.0.2",
     "@vueuse/core": "^10.9.0",
     "dat.gui": "^0.7.9",
+    "data-structure-typed": "^1.52.0",
     "dayjs": "^1.11.10",
     "normalize.css": "^8.0.1",
     "stats.js": "^0.17.0",
