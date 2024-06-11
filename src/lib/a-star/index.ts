@@ -6,16 +6,53 @@ enum CellType {
   Visited = 1 << 3,
 }
 
+class GridMap<V> {
+  data = new Map<number, V>()
+
+  constructor(readonly gird: Grid<any>, readonly defaultValue?: V) {}
+
+  get(key: IVec2) {
+    const idx = this.gird.getIndex(key.x, key.y)
+
+    return this.data.get(idx) ?? this.defaultValue
+  }
+
+  set(key: IVec2, value: V) {
+    const idx = this.gird.getIndex(key.x, key.y)
+
+    return this.data.set(idx, value)
+  }
+
+  has(key: IVec2) {
+    const idx = this.gird.getIndex(key.x, key.y)
+
+    return this.data.has(idx)
+  }
+
+  delete(key: IVec2) {
+    const idx = this.gird.getIndex(key.x, key.y)
+
+    this.data.delete(idx)
+  }
+
+  clear() {
+    this.data.clear()
+  }
+}
+
 export class AStar {
   grid: Grid<number>
 
-  gScroe = new Map<number, number>()
-  fScroe = new Map<number, number>()
+  gScore: GridMap<number>
+  fScore: GridMap<number>
+  cameFrom: GridMap<IVec2>
   openSet = new MinHeap<IVec2>()
-  cameFrom = new Map<number, IVec2>()
 
   constructor(readonly w: number, readonly h: number) {
     this.grid = new Grid(w, h)
+    this.gScore = new GridMap<number>(this.grid, Infinity)
+    this.fScore = new GridMap<number>(this.grid, Infinity)
+    this.cameFrom = new GridMap<IVec2>(this.grid)
   }
 
   getAroundWalkableCells(p: IVec2) {
@@ -49,22 +86,21 @@ export class AStar {
       distance: (from: IVec2, to: IVec2) => number
     },
   ) {
-    this.fScroe.clear()
-    this.gScroe.clear()
+    this.fScore.clear()
+    this.gScore.clear()
     this.cameFrom.clear()
 
     this.openSet = new MinHeap<IVec2>([], {
       comparator: (a, b) => {
-        const scoreA = this.fScroe.get(this.getIndex(a)) ?? Infinity
-        const scoreB = this.fScroe.get(this.getIndex(b)) ?? Infinity
+        const scoreA = this.fScore.get(a)!
+        const scoreB = this.fScore.get(b)!
 
         return scoreA - scoreB
       },
     })
 
-    const startIndex = this.getIndex(start)
-    this.gScroe.set(startIndex, 0)
-    this.fScroe.set(startIndex, opt.heuristic(start, end))
+    this.gScore.set(start, 0)
+    this.fScore.set(start, opt.heuristic(start, end))
 
     this.openSet.add(start)
 
@@ -80,15 +116,13 @@ export class AStar {
       const neighbors = this.getAroundWalkableCells(current)
 
       for (const neighbor of neighbors) {
-        const currentIdx = this.getIndex(current)
-        const neighborIdx = this.getIndex(neighbor)
-        const tentativeScore = this.gScroe.get(currentIdx)! + opt.distance(current, neighbor)
-        const gScoreNeighbor = this.gScroe.get(neighborIdx) ?? Infinity
+        const tentativeScore = this.gScore.get(current)! + opt.distance(current, neighbor)
+        const gScoreNeighbor = this.gScore.get(neighbor)!
 
         if (tentativeScore < gScoreNeighbor) {
-          this.cameFrom.set(neighborIdx, current)
-          this.gScroe.set(neighborIdx, tentativeScore)
-          this.fScroe.set(neighborIdx, tentativeScore + opt.heuristic(neighbor, end))
+          this.cameFrom.set(neighbor, current)
+          this.gScore.set(neighbor, tentativeScore)
+          this.fScore.set(neighbor, tentativeScore + opt.heuristic(neighbor, end))
 
           if (!this.openSet.has(neighbor)) {
             this.openSet.add(neighbor)
@@ -107,13 +141,11 @@ export class AStar {
   _reconstructPath(point: IVec2) {
     const totalPath: IVec2[] = []
 
-    let pointIdx = this.getIndex(point)
+    while (this.cameFrom.has(point)) {
+      const cameFormPoint = this.cameFrom.get(point)!
+      totalPath.push(cameFormPoint)
 
-    while (this.cameFrom.has(pointIdx)) {
-      const p = this.cameFrom.get(pointIdx)!
-      totalPath.push(p)
-
-      pointIdx = this.getIndex(p)
+      point = cameFormPoint
     }
 
     return totalPath
