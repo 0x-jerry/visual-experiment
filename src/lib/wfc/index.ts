@@ -71,10 +71,7 @@ export abstract class WFC {
           return acc + cur.domains.length
         }, 0)
 
-        if (
-          entropy < finalState.entropy ||
-          (entropy === finalState.entropy && Math.random() < 0.5)
-        ) {
+        if (entropy < finalState.entropy || entropy === finalState.entropy) {
           // add some randomness
           if (finalState.cell && Math.random() < 0.4) {
             return
