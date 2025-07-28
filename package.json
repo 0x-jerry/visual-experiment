@@ -21,7 +21,7 @@
   "dependencies": {
     "@0x-jerry/utils": "^2.1.2",
     "@0x-jerry/vue-kit": "^2.0.2",
-    "@vueuse/core": "^10.9.0",
+    "@vueuse/core": "^13.0.0",
     "dat.gui": "^0.7.9",
     "data-structure-typed": "^1.52.0",
     "dayjs": "^1.11.10",
