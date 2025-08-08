@@ -35,7 +35,7 @@
     "@iconify/json": "^2.2.196",
     "@tweakpane/core": "^2.0.3",
     "@types/dat.gui": "^0.7.12",
-    "@types/node": "^20.12.2",
+    "@types/node": "^22.0.0",
     "@types/stats.js": "^0.17.3",
     "@vitejs/plugin-vue": "^5.0.4",
     "less": "^4.2.0",
