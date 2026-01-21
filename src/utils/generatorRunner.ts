@@ -48,8 +48,8 @@ export function generatorRunner<T extends (...args: any[]) => AsyncGenerator | G
 }
 
 type GeneratorRunnerEvent = {
-  next(): void
-  done(): void
+  next: []
+  done: []
 }
 
 class GeneratorRunner<
